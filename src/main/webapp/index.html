@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+	
+
+	<title>Code Connect</title>
+
+	<!--<link href="css/bootstrap.min.css" rel="stylesheet">-->
+	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+	
+	<!-- Custom styles for this app -->
+	<link href="css/CodeConnect.css" rel="stylesheet">
+	
+	<!-- Sidr stylesheet -->
+	<link rel="stylesheet" href="js/sidr/stylesheets/jquery.sidr.dark.css">
+
+	</head>
+
+	<body style="position:fixed;">
+		<div id="leftmenu" class="leftmenu">
+			<a id="project-menu" href="#project-menu">PROJECT LIST</a>
+		</div>
+		<div id="rightmenu" class="rightmenu">
+			<a id="legend-menu" href="#legend-menu">LEGEND</a>
+		</div>
+		<div id="left-menu">
+			<div id="left-menu-contents"></div>
+		</div>
+		<div id="right-menu">
+			<h1 id="control-legend-header">Controls</h1>
+			<h3>Reset
+				<input id="resetbtn" type="button" class="swatch" onclick="javascript:currentConnection.assignCurrent(undefined,undefined)">
+			</h3>
+			<h3>Dependency Labels
+				<input type="checkbox" onclick="javascript:currentConnection.update()" id="dependency-label" name="dependency-label" style="float:right;">
+			</h3>
+			<h3>Downstream Labels
+				<input type="checkbox" onclick="javascript:currentConnection.update()" id="downstream-label" name="downstream-label" style="float:right;">
+			</h3>
+			<h3>View
+				<select style="color:black" id="viewselect" onchange="javascript:updateVisualization(currentProject, currentGroup)">
+					<option selected="true" value="connection">Connection</option>
+					<option value="text">Text</option>
+				</select>
+			</h3>
+			<div id="right-menu-contents"></div>
+		</div>
+		
+		<div id="display"></div>
+
+	<!-- ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="js/jquery-1.10.2.min.js"></script>
+	<script src="js/jquery-xcolor/jquery.xcolor.min.js"></script>
+	
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Include the Sidr JS -->
+	<script src="js/sidr/jquery.sidr.min.js"></script>
+	<!-- Include d3.js -->
+	<script src="js/d3/d3.js"></script>
+	<script src="http://d3js.org/colorbrewer.v1.min.js"></script>
+	<!-- Include utility file -->
+	<script src="js/utils.js"></script>
+	<script src="js/neo4j.js"></script>
+	<!-- Include Code Connect Javascript -->
+	<script src="js/CodeConnect.js"></script>
+	<script src="js/CodeConnectTable.js"></script>
+	<!-- Validation	-->
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.34/jquery.form-validator.min.js"></script>
+	
+	<!-- For Development, TODO:: load information from database -->
+	<script src="js/projects.js"></script>
+	
+	<script>
+		var currentConnection, currentConnectionTable;
+		var currentProject = projects[0].name;
+		var currentGroup = projects[0].name;
+		
+		var createCodeConnection = function( json ){
+			console.log("CreateCodeConnect :: ");
+			console.log( convertJsonResponseToNodes(currentProject, json) );
+			
+			json = convertJsonResponseToNodes(currentProject, json);
+			
+			// remove previous 
+			if (currentConnection) currentConnection.cleanup();
+			w = $( "body" ).width();
+			h = $( "body" ).height();
+			// create a new CodeConnection
+			currentConnection = new CodeConnect("#display", w, h).update(json, currentProject);
+		}
+		
+		var createCodeConnectionTable = function( json ){
+			$("#resetbtn").attr("disabled", "true");
+			$("#dependency-label").attr("disabled", "true");
+			$("#downstream-label").attr("disabled", "true");
+			//TODO
+			if(currentConnectionTable) currentConnectionTable = undefined;
+			currentConnectionTable = new CodeConnectTable("#display").update(json, currentProject);
+		}
+		//d3.json('typetables4j-data.json', createCodeConnection);
+
+		var updateVisualization = function( projectName, projectGroup, version ){
+			console.log("Updating visualization with Project Data ["+projectName+"]");
+			var projectVersion = $("#" + projectName + "_versions").val();
+			if( version ){
+				projectVersion = version;
+			}
+			console.log("using this version :: " + projectVersion);
+			getProjectData(projectName, projectGroup, projectVersion, function(data, name, group, version){
+				console.log("Getting Project data returned this :: ");
+				console.log(data);
+				currentProject = name;
+				currentGroup = group;
+				$("#display").empty()
+				if( $("#viewselect").val() == "text" ){
+					console.log("Creating TABLE");
+					createCodeConnectionTable(data);
+				}else{
+					console.log("Creating connection");
+					createCodeConnection(data);
+				}
+			});
+		}
+		var populateProjectGroupSelection = function( ){
+			console.log("population group selector");
+			getProjectGroups( $("#projects_name_selector").val() , function(data, name){
+				var selector = $("#projects_group_selector");
+				selector.empty();
+				selector.attr("style", null);
+				for(var i = 0; i < data.data.length; i++){
+					selector.append("<option style=\"color:black\">" + data.data[i] + "</option>")
+				}
+				populateProjectVersionSelection();
+			});
+		}
+		var populateProjectVersionSelection = function( ){
+			console.log("population version selector");
+			getProjectVersions( $("#projects_name_selector").val(), $("#projects_group_selector").val(), function(data, name, group){
+				var selector = $("#projects_version_selector");
+				data = data.data.reverse();
+				selector.empty();
+				selector.attr("style", null);
+				for(var i = 0; i < data.length; i++){
+					selector.append("<option style=\"color:black\">" + data[i] + "</option>")
+				}
+				updateVisualization(name, group, $("#projects_version_selector").val() );
+			});
+		}
+		$(document).ready(function() {
+			$('#project-menu').sidr({
+				name: 'sidr-left',
+				side: 'left',
+				displace: false,
+				onOpen: function(){
+					//TODO calculate margin here
+					$( "#leftmenu" ).css('margin-left',270+'px');
+					if( $("#viewselect").val() == "text" ){
+						$( "#display" ).css('margin-left',270+'px');
+					}
+				},
+				onClose: function(){
+					$( "#leftmenu" ).css('margin-left',0+'px');
+					$( "#display" ).css('margin-left',0+'px');
+				},
+				source: function(name) {
+					menu = '<ul id="project-menu-contents">';
+					menu = '<ul><span><select onchange=\"populateProjectGroupSelection()\" id=\"projects_name_selector\"></select><select style=\"display:none;\" onchange=\"populateProjectVersionSelection()\" id=\"projects_group_selector\"></select><select style=\"display:none;\" onchange=\"updateVisualization($(\'#projects_name_selector\').val(), $(\'#projects_group_selector\').val(), $(\'#projects_version_selector\').val() )\" id=\"projects_version_selector\"></select></span></li>';
+					getProjectNames(function(data){
+						var selector = $("#projects_name_selector")
+						for(var i = 0; i < data.data.length; i++){
+							selector.append("<option style=\"color:black\">" + data.data[i] + "</option>")
+						}
+					});
+					var linkStart = '<li class="active">';
+					for(var i = 0; i < projects.length; i++){
+						var versions = getProjectVersions(projects[i].name, projects[i].group, function(data, projectName, projectGroup){
+							data = data.data.reverse()
+							var selector = $("#" + projectName + "_versions")
+							for( var i = 0; i < data.length; i++){
+								selector.append("<option>" + data[i][0] + "</option>");
+							}
+						});
+						menu += linkStart + "<span><a href=\"#\" onclick=\"javascript:updateVisualization(\'"+ projects[i].name + "\', \'" + projects[i].group + "\')\">" + projects[i].name + "</a><select id=\"" + projects[i].name + "_versions\"></select></span></li>";
+						linkStart = '<li>';
+					}
+					menu += '</ul>';
+					return menu;
+				}
+			});
+			$('#legend-menu').sidr({
+				name: 'right-menu',
+				side: 'right',
+				displace: false,
+				onOpen: function(){
+					//TODO calculate margin here
+					$( "#rightmenu" ).css('margin-right',270+'px');
+				},
+				onClose: function(){
+					$( "#rightmenu" ).css('margin-right',0+'px');
+				},
+			});
+			
+			updateVisualization( projects[0].name, projects[0].group );
+		});
+	</script>
+	</body>
+</html>
