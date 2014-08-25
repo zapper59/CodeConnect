@@ -1,23 +1,22 @@
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.0/web.gradle"
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.0/deps.gradle"
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.0/sonar.gradle"
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.0/rpm.gradle"
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.0/yum.gradle"
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/web.gradle"
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/deps.gradle"
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/sonar.gradle"
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/rpm.gradle"
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/yum.gradle"
 
 dependencies {
-	compile "javax.ws.rs:javax.ws.rs-api:2.0"
-	compile "org.glassfish.jersey.containers:jersey-container-servlet:2.6"
-	compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.3.0"
 	compile "com.fasterxml.jackson.core:jackson-annotations:2.3.0"
+	compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.3.0"
+	compile "javax.ws.rs:javax.ws.rs-api:2.0"
 	compile "org.apache.commons:commons-email:1.3.2"
 	compile "org.apache.velocity:velocity:1.7"
-	compile "org.slf4j:slf4j-api:1.7.5"
+	compile "org.glassfish.jersey.containers:jersey-container-servlet:2.6"
+	compile "org.slf4j:slf4j-api:1.7.7"
 
 	// TODO: Remove this once we remove the jackson 1.x annotations from CmiBean
 	compile "org.codehaus.jackson:jackson-core-asl:1.9.10"
 
-	runtime "org.slf4j:slf4j-log4j12:1.7.5"
-	runtime "log4j:log4j:1.2.17"
+	runtime "com.cisco.collab.collab-logging:collab-logging:1.0.0-SNAPSHOT"
 
 	providedCompile "javax.servlet:javax.servlet-api:3.0.1"
 }
