@@ -1,0 +1,21 @@
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "maven"
+
+version = "0.1.0-SNAPSHOT"
+group = "com.toastedbits.codeconnect"
+
+dependencies {
+	compile "org.glassfish.jersey.core:jersey-client:2.17"
+	compile "org.apache.commons:commons-lang3:3.4"
+	compile "javax.servlet:javax.servlet-api:3.1.0"
+	compile "org.slf4j:slf4j-api:1.7.7"
+
+	//This jar does black magic to auto-configure jersey and can seriously foobar unsuspecting apps, short term solution
+	compile "org.glassfish.jersey.media:jersey-media-json-jackson:2.17"
+
+	runtime "org.slf4j:jul-to-slf4j:1.7.12"
+	//runtime dependency for slf4j to logback provided by gradleApi
+
+	testCompile "junit:junit:4.12"
+}
