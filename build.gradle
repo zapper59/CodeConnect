@@ -1,8 +1,12 @@
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/web.gradle"
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/deps.gradle"
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/sonar.gradle"
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/rpm.gradle"
-apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/2.0.1/yum.gradle"
+ext{
+	gradleScriptsVersion = "2.2.0"
+}
+
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/${gradleScriptsVersion}/web.gradle"
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/${gradleScriptsVersion}/deps.gradle"
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/${gradleScriptsVersion}/sonar.gradle"
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/${gradleScriptsVersion}/rpm.gradle"
+apply from: "http://ncs-artifactory.cisco.com:8081/artifactory/gradle-local/build/${gradleScriptsVersion}/yum.gradle"
 
 dependencies {
 	compile "com.fasterxml.jackson.core:jackson-annotations:2.3.0"
@@ -40,7 +44,7 @@ tasks.withType(JavaCompile) {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = "2.0"
+	gradleVersion = "2.2"
 }
 
 sonarRunner {

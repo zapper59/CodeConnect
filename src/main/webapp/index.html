@@ -9,16 +9,15 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
-	
 
 	<title>Code Connect</title>
 
 	<!--<link href="css/bootstrap.min.css" rel="stylesheet">-->
 	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-	
+
 	<!-- Custom styles for this app -->
 	<link href="css/CodeConnect.css" rel="stylesheet">
-	
+
 	<!-- Sidr stylesheet -->
 	<link rel="stylesheet" href="js/sidr/stylesheets/jquery.sidr.dark.css">
 
@@ -46,21 +45,21 @@
 				<input type="checkbox" onclick="javascript:currentConnection.update()" id="downstream-label" name="downstream-label" style="float:right;">
 			</h3>
 			<h3>View
-				<select style="color:black" id="viewselect" onchange="javascript:updateVisualization(currentProject, currentGroup)">
+				<select style="color:white" id="viewselect" onchange="javascript:updateVisualization(currentProject, currentGroup)">
 					<option selected="true" value="connection">Connection</option>
 					<option value="text">Text</option>
 				</select>
 			</h3>
 			<div id="right-menu-contents"></div>
 		</div>
-		
+
 		<div id="display"></div>
 
 	<!-- ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="js/jquery-1.10.2.min.js"></script>
 	<script src="js/jquery-xcolor/jquery.xcolor.min.js"></script>
-	
+
 	<script src="js/bootstrap.min.js"></script>
 	<!-- Include the Sidr JS -->
 	<script src="js/sidr/jquery.sidr.min.js"></script>
@@ -75,29 +74,29 @@
 	<script src="js/CodeConnectTable.js"></script>
 	<!-- Validation	-->
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.34/jquery.form-validator.min.js"></script>
-	
+
 	<!-- For Development, TODO:: load information from database -->
 	<script src="js/projects.js"></script>
-	
+
 	<script>
 		var currentConnection, currentConnectionTable;
 		var currentProject = projects[0].name;
 		var currentGroup = projects[0].name;
-		
+
 		var createCodeConnection = function( json ){
 			console.log("CreateCodeConnect :: ");
 			console.log( convertJsonResponseToNodes(currentProject, json) );
-			
+
 			json = convertJsonResponseToNodes(currentProject, json);
-			
-			// remove previous 
+
+			// remove previous
 			if (currentConnection) currentConnection.cleanup();
-			w = $( "body" ).width();
-			h = $( "body" ).height();
+			w = $( window ).width();
+			h = $( window ).height();
 			// create a new CodeConnection
 			currentConnection = new CodeConnect("#display", w, h).update(json, currentProject);
 		}
-		
+
 		var createCodeConnectionTable = function( json ){
 			$("#resetbtn").attr("disabled", "true");
 			$("#dependency-label").attr("disabled", "true");
@@ -141,6 +140,7 @@
 				}
 				populateProjectVersionSelection();
 			});
+			$("#group-list-header").attr("style","display:block");
 		}
 		var populateProjectVersionSelection = function( ){
 			console.log("population version selector");
@@ -154,7 +154,11 @@
 				}
 				updateVisualization(name, group, $("#projects_version_selector").val() );
 			});
+			$("#version-list-header").attr("style","display:block");
 		}
+		$(window).resize(function(){
+			currentConnection.updateSize($(window).width(),$(window).height());
+		});
 		$(document).ready(function() {
 			$('#project-menu').sidr({
 				name: 'sidr-left',
@@ -173,7 +177,10 @@
 				},
 				source: function(name) {
 					menu = '<ul id="project-menu-contents">';
-					menu = '<ul><span><select onchange=\"populateProjectGroupSelection()\" id=\"projects_name_selector\"></select><select style=\"display:none;\" onchange=\"populateProjectVersionSelection()\" id=\"projects_group_selector\"></select><select style=\"display:none;\" onchange=\"updateVisualization($(\'#projects_name_selector\').val(), $(\'#projects_group_selector\').val(), $(\'#projects_version_selector\').val() )\" id=\"projects_version_selector\"></select></span></li>';
+					menu = '<ul><span>' +
+							'<h3 id=\"projects-list-header\">Projects:</h3><select onchange=\"populateProjectGroupSelection()\" id=\"projects_name_selector\"></select>' +
+							'<h3 id=\"group-list-header\" style=\"display:none;\">Groups:</h3><select style=\"display:none;\" onchange=\"populateProjectVersionSelection()\" id=\"projects_group_selector\"></select>' +
+							'<h3 id=\"version-list-header\" style=\"display:none;\">Versions:</h3><select style=\"display:none;\" onchange=\"updateVisualization($(\'#projects_name_selector\').val(), $(\'#projects_group_selector\').val(), $(\'#projects_version_selector\').val() )\" id=\"projects_version_selector\"></select></span></li>';
 					getProjectNames(function(data){
 						var selector = $("#projects_name_selector")
 						for(var i = 0; i < data.data.length; i++){
@@ -208,7 +215,6 @@
 					$( "#rightmenu" ).css('margin-right',0+'px');
 				},
 			});
-			
 			updateVisualization( projects[0].name, projects[0].group );
 		});
 	</script>

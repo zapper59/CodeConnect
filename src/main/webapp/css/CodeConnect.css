@@ -88,3 +88,8 @@ path.link {
   stroke: #9ecae1;
   stroke-width: 1.5px;
 }
+
+option{
+	background-color: white;
+	color: black;
+}

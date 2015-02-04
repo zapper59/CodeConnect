@@ -2,27 +2,38 @@ var CodeConnect = function(selector, w, h) {
 		this.w = w;
 		this.h = h;
 		this.current = {dependency:undefined, downstream:undefined};
-	
+
 		d3.select(selector).selectAll("svg").remove();
-	
+
 		this.svg = d3.select(selector).append("svg:svg")
 			.attr('width', w)
 			.attr('height', h);
-	
+
 		this.svg.append("svg:rect")
 			.style("stroke", "#999")
 			.style("fill", "#fff")
 			.attr('width', w)
 			.attr('height', h);
-	
+
 		this.force = d3.layout.force()
 			.on("tick", this.tick.bind(this))
 			//TODO make these functions vary on something
 			.charge(function(d) { return -4000; })
 			.linkDistance(function(d) { return 130; })
-			.size([h, w]);
+			.size([h,w]);
 	};
-
+CodeConnect.prototype.updateSize = function(w,h){
+		this.w=w;
+		this.h=h;
+		this.svg.attr('width', w)
+			.attr('height', h);
+		this.svg.select("rect")
+			.attr('width',w)
+			.attr('height',h);
+		this.force.size([w,h]);
+		this.force.start();
+		//TODO: Re-center web
+	};
 CodeConnect.prototype.update = function(json, projectName) {
 		if (json){
 			this.json = json;
@@ -31,34 +42,34 @@ CodeConnect.prototype.update = function(json, projectName) {
 		if (projectName){
 			this.projectName = projectName;
 		}
-	
+
 		this.json.fixed = true;
 		this.json.x = this.w / 2;
 		this.json.y = this.h / 2;
-		
+
 		var nodes = this.metadata.nodes;
 		var links = d3.layout.tree().links(nodes);
 		var total = nodes.length || 1;
-		
+
 		this.svg.selectAll("text").remove();
-		
+
 		// Restart the force layout
 		this.force
 			.nodes(nodes)
 			.links(links)
 			.gravity(Math.atan(total / 50) / Math.PI * 0.3)
 			.start();
-		
+
 		//remove any previous links
-		if (this.link) this.link.remove() 
+		if (this.link) this.link.remove()
 		// Update the links
 		this.link = this.svg.selectAll("line.link")
 			.data(links, function(d) { return d.target.relationtype; });
-	
+
 		// Enter any new links
 		this.link.enter().insert("svg:line", ".node")
 			.attr("class", "link")
-//			.attr("id", function(d) { 
+//			.attr("id", function(d) {
 //				console.log("SETTING ID :: ");
 //				console.log(d.target.name)
 //				console.log("looping nodes");
@@ -72,13 +83,13 @@ CodeConnect.prototype.update = function(json, projectName) {
 			.attr("x2", function(d) { return d.target.x; })
 			.attr("y2", function(d) { return d.target.y; })
 			.attr("style", function(d) { return "stroke:" + d.target.linkcolor; } );
-	
+
 		// Exit any old links.
 		this.link.exit().remove();
-	
+
 		this.textlabel = this.svg.selectAll("linktext")
 			.data(links, function(d) { return d.target.relationtype; } );
-		
+
 		this.textlabel.enter()//.insert("svg:g")
 			.insert("svg:text").text( function(d){ return d.target.relationtype } )
 				.attr("x", function(d){ return d.target.x } )
@@ -86,16 +97,16 @@ CodeConnect.prototype.update = function(json, projectName) {
 				.attr('class', 'linktext')
 				.attr('text-anchor', 'middle');
 		this.textlabel.exit().remove();
-		
+
 		//remove any previous nodes
-		if (this.node) this.node.remove() 
+		if (this.node) this.node.remove()
 		// Update the nodes
 		this.node = this.svg.selectAll("circle.node")
 			.data(nodes, function(d) { return d.relationtype; });
-	
+
 		this.node.transition()
 			.attr("r", function(d) { return d.children ? 30 : 15; });
-	
+
 		// Enter any new nodes
 		this.node.enter().append('svg:circle')
 			.attr("class", "node")
@@ -105,17 +116,17 @@ CodeConnect.prototype.update = function(json, projectName) {
 			.on("click", this.click.bind(this))
 			.on("mouseover", this.mouseover.bind(this))
 			.on("mouseout", this.mouseout.bind(this));
-	
+
 		// Exit any old nodes
 		this.node.exit().remove();
-	
+
 		this.text = this.svg.append('svg:text').attr('class', 'nodetext').attr('dy', 0).attr('dx', 0).attr('text-anchor', 'middle');
 		this.nametext = this.svg.append('svg:text').attr('class', 'nodetext').attr('dy', 0).attr('dx', 0).attr('text-anchor', 'middle');
 		this.grouptext = this.svg.append('svg:text').attr('class', 'nodetext').attr('dy', 0).attr('dx', 0).attr('text-anchor', 'middle');
 		this.versiontext = this.svg.append('svg:text').attr('class', 'nodetext').attr('dy', 0).attr('dx', 0).attr('text-anchor', 'middle');
-		
+
 		this.populateLegend();
-	
+
 		return this;
 	};
 
@@ -132,9 +143,9 @@ CodeConnect.prototype.tick = function() {
 			}.bind(this) )
 		.attr("class", function(d){
 				return this.shouldLinkShowSelected(d)
-					? "link" : "unselected"; 
+					? "link" : "unselected";
 			}.bind(this) );
-	
+
 	if( $("#dependency-label").is(':checked') ){
 		this.textlabel
 		.attr("x", function(d) { return (d.target.x + d.source.x)/2; })
@@ -151,7 +162,7 @@ CodeConnect.prototype.tick = function() {
 			return "translate(" + Math.max(5, Math.min(w - 5, d.x)) + "," + Math.max(5, Math.min(h - 5, d.y)) + ")";
 		}).attr("class", function(d){
 			return (this.shouldDownstreamShowSelected(d))
-				? "node" : "unselected"; 
+				? "node" : "unselected";
 		}.bind(this) );
 	};
 
@@ -179,9 +190,9 @@ CodeConnect.prototype.click = function(d) {
 
 
 CodeConnect.prototype.flattenAndGatherMeta = function(root) {
-	var data = {}, 
-		nodes = [], 
-		depList = {}, 
+	var data = {},
+		nodes = [],
+		depList = {},
 		depNames = [],
 		projectList = {},
 		projectNames = [],
@@ -197,7 +208,7 @@ CodeConnect.prototype.flattenAndGatherMeta = function(root) {
 			list[value]++;
 		}
 	}
-	
+
 	function recurse(node) {
 		if (node.children) {
 			node.children.reduce(function(p, v) {
@@ -215,16 +226,16 @@ CodeConnect.prototype.flattenAndGatherMeta = function(root) {
 	data.dependencyNames = depNames;
 	data.downstreamListCounts = projectList;
 	data.downstreamNames = projectNames;
-	
+
 	var randColor = generateRandomColor();
 	var tmpColorArr = $.xcolor.analogous( randColor, depNames.length)
 	data.dependencyColors = this.createColorArray(tmpColorArr, depNames, "dependencyType");
-	
+
 	tmpColorArr = $.xcolor.monochromatic( randColor, projectNames.length)
 	data.downstreamColors = this.createColorArray(tmpColorArr, projectNames, "downstream")
-	
+
 	for(var i = 0; i < nodes.length; i++){
-		nodes[i].linkcolor = data.dependencyColors[ nodes[i].relationtype ]; 
+		nodes[i].linkcolor = data.dependencyColors[ nodes[i].relationtype ];
 		nodes[i].downstreamcolor = data.downstreamColors[ nodes[i].name ];
 	}
 	data.nodes = nodes;
@@ -286,7 +297,7 @@ CodeConnect.prototype.populateLegend = function(){
 			var depLinkColorRGB = hexToRgb( this.metadata.dependencyColors[depName] )
 			var depCount = this.metadata.dependencyListCounts[depName];
 			depSection.append("li")
-			
+
 			.append("h3").text(depName)
 				.append("input").text(depName).attr("type", "button").attr("class", "swatch").attr("onclick", "javascript:currentConnection.assignCurrent(\'dependency\',\'" + depName + "\')")
 				.attr("style", "background-color: rgb(" + depLinkColorRGB.r + ", " + depLinkColorRGB.g + ", " + depLinkColorRGB.b + ");");
