@@ -17,7 +17,8 @@ function rgbToHex(rgb) {
 }
 
 function convertJsonResponseToNodes(projectName, json){
-	console.log("Converting Json Response to Node list");
+	console.log("Converting Json Response to Node list:");
+	console.log(json);
 	var nodes = {};
 	nodes.name = projectName;
 	nodes.children=[];

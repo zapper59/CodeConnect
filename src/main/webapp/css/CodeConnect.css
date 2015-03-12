@@ -13,14 +13,32 @@ circle.node.collapsed {
   stroke: #555;
 }
 
-circle.unselected {
-  fill: #C0C0C0 !important ;
-}
-
 .nodetext {
   fill: #252929;
   font-weight: bold;
   text-shadow: 0 0 0.2em white;
+}
+
+text {
+    font: 15px sans-serif;
+    pointer-events: none;
+}
+
+text.light {
+	color: grey;
+	fill: grey;
+}
+
+text.shadow {
+	stroke: white;
+	color: white;
+	stroke-width: 5px;
+	stroke-opacity: .9;
+}
+
+textpath {
+	fill: blue;
+	color: blue;
 }
 
 line.link {
@@ -44,9 +62,11 @@ body{
 	width: 100%;
 }
 
-display{
+#display{
 	height: 100%;
 	width: 100%;
+	overflow-y: auto;
+	position: fixed;
 }
 
 .leftmenu{
@@ -86,10 +106,26 @@ display{
 path.link {
   fill: none;
   stroke: #9ecae1;
-  stroke-width: 1.5px;
+  stroke-width: 3px;
 }
 
-option{
+.sidr .dropdown {
+	color: white;
+}
+
+option {
 	background-color: white;
 	color: black;
+}
+
+hr {
+	padding: 0;
+	margin: 0;
+	border-width: 1px;
+	border-color: #aaaaaa;
+}
+
+rect {
+	stroke: #999;
+	fill: white;
 }
