@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+<meta name="application-name" content="&nbsp;"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="mstile-144x144.png" />
+<meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+<meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+<meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+
 <link
 	href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700'
 	rel='stylesheet' type='text/css'>
@@ -40,14 +62,50 @@
 		<hr>
 	</div>
 	<div id="left-menu">
-		<div id="left-menu-contents"></div>
+		<div id="left-menu-contents">
+			<div>
+				<h3 id="projects-list-header">Projects:</h3>
+				<select onchange="populateProjectGroupSelection()" id="projects_name_selector" class="dropdown"></select>
+				<h3 id="group-list-header" style="display: none;">Groups:</h3>
+				<select onchange="populateProjectVersionSelection()" id="projects_group_selector" class="dropdown"></select>
+				<h3 id="version-list-header">Versions:</h3>
+				<select style="display: none;"
+				onchange="updateVisualization($('#projects_name_selector').val(), $('#projects_group_selector').val(), $('#projects_version_selector').val())"
+				id="projects_version_selector" class="dropdown"></select>
+			</div>
+		</div>
 	</div>
 	<div id="right-menu">
 		<h1 id="control-legend-header">Controls</h1>
+		<h3>
+			View <select id="viewselect" class="dropdown"
+				onchange="javascript:updateVisualization(currentProject, currentGroup, currentVersion)">
+				<option value="connection">Connection</option>
+				<option value="text">Text</option>
+			</select>
+		</h3>
+		<h3>
+			Show inbound instead of outbound <input type="checkbox"
+				onclick="javascript:updateVisualization(currentProject, currentGroup, currentVersion)"
+				id="inbound" name="inbound" style="float: right;">
+		</h3>
 		<div id="codeconnect-options">
 			<h3>
 				Reset <input id="resetbtn" type="button" class="swatch"
 					onclick="javascript:currentConnection.assignCurrent(undefined,undefined)">
+			</h3>
+			<h3>
+				Limit to: <select id="limitselect" class="dropdown"
+					onchange="javascript:currentConnection.update()">
+					<option value="both">Both</option>
+					<option value="outofdate">Out of date</option>
+					<option value="uptodate">Up to date</option>
+				</select>
+			</h3>
+			<h3>
+				Show versions separately <input type="checkbox"
+					onclick="javascript:currentConnection.update()"
+					id="show-versions-separately" name="show-versions-separately" style="float: right;">
 			</h3>
 			<h3>
 				Dependency Labels <input type="checkbox"
@@ -65,13 +123,16 @@
 					id="separate-downstream-lines" name="separate-downstream-lines" style="float: right;" checked>
 			</h3>
 		</div>
-		<h3>
-			View <select id="viewselect" class="dropdown"
-				onchange="javascript:updateVisualization(currentProject, currentGroup, currentVersion)">
-				<option value="connection">Connection</option>
-				<option value="text">Text</option>
-			</select>
-		</h3>
+		<div id="codeconnecttable-options">
+			<h3>
+				Expand All <input id="expandbtn" type="button" class="swatch"
+					onclick="javascript:currentConnectionTable.expandAll()">
+			</h3>
+			<h3>
+				Collapse All <input id="collapsebtn" type="button" class="swatch"
+					onclick="javascript:currentConnectionTable.collapseAll();">
+			</h3>
+		</div>
 		<div id="right-menu-contents"></div>
 	</div>
 
@@ -104,11 +165,18 @@
 		var currentProject;
 		var currentGroup;
 		var currentVersion;
+		var leftMenuOpen = false;
+		var rightMenuOpen = false;/* menu = '<ul id="project-menu-contents"><span>'
+		+ '<h3 id="projects-list-header">Projects:</h3><select onchange="populateProjectGroupSelection()" id="projects_name_selector" class="dropdown"></select>'
+		+ '<h3 id="group-list-header" style="display:none;">Groups:</h3><select style="display:none;" onchange="populateProjectVersionSelection()" id="projects_group_selector" class="dropdown"></select>'
+		+ '<h3 id="version-list-header" style="display:none;">Versions:</h3><select style="display:none;" onchange="updateVisualization($("#projects_name_selector").val(), $("#projects_group_selector").val(), $("#projects_version_selector").val() )" id="projects_version_selector" class="dropdown"></select></span></li>';
+*/
 
 		var createCodeConnection = function(json) {
 			$("#codeconnect-options").show();
+			$("#codeconnecttable-options").hide();
 			console.log("CreateCodeConnect :: ");
-			json = convertJsonResponseToNodes(currentProject, json);
+			json = convertJsonResponseToNodes(currentProject, currentVersion, json);
 			console.log(json);
 
 			// remove previous
@@ -119,15 +187,17 @@
 			// create a new CodeConnection
 			currentConnection = new CodeConnect("#display", w, h).update(json,
 					currentProject);
+			resizeWindow();
 		}
 
 		var createCodeConnectionTable = function(json) {
 			$("#codeconnect-options").hide()
-			//TODO
-			if (currentConnectionTable)
-				currentConnectionTable = undefined;
+			$("#codeconnecttable-options").show();
+			if (currentConnection)
+				currentConnection = undefined;
 			currentConnectionTable = new CodeConnectTable("#display").update(
 					json, currentProject);
+			resizeWindow();
 		}
 
 		//Use for Development
@@ -156,7 +226,7 @@
 					console.log("Creating connection");
 					createCodeConnection(data);
 				}
-			});
+			}, $("#inbound").is(":checked"));
 		}
 		var populateProjectGroupSelection = function() {
 			console.log("population group selector");
@@ -189,63 +259,69 @@
 			});
 			$("#version-list-header").attr("style", "display:block");
 		}
-		$(window).resize(
-				function() {
-					if(currentConnection != null)
-						currentConnection.updateSize($(window).width(), 
-								$(window).height() -  $("#header").height());
-				});
-		$(document).ready(
-			function() {
-				var marginSize = 270;
-				$('#project-menu')
-					.sidr({
-						name : 'sidr-left',
-						side : 'left',
-						displace : false,
-						onOpen : function() {
-							$("#leftmenu").css('margin-left', marginSize + 'px');
-							if ($("#viewselect").val() == "text") {
-								$("#display").css('margin-left', marginSize + 'px');
-							}
-						},
-						onClose : function() {
-							$("#leftmenu").css('margin-left', 0 + 'px');
-							$("#display").css('margin-left', 0 + 'px');
-						},
-						source : function(name) {
-							menu = '<ul id="project-menu-contents">';
-							menu = '<ul><span>'
-									+ '<h3 id=\"projects-list-header\">Projects:</h3><select onchange=\"populateProjectGroupSelection()\" id=\"projects_name_selector\" class="dropdown"></select>'
-									+ '<h3 id=\"group-list-header\" style=\"display:none;\">Groups:</h3><select style=\"display:none;\" onchange=\"populateProjectVersionSelection()\" id=\"projects_group_selector\" class="dropdown"></select>'
-									+ '<h3 id=\"version-list-header\" style=\"display:none;\">Versions:</h3><select style=\"display:none;\" onchange=\"updateVisualization($(\'#projects_name_selector\').val(), $(\'#projects_group_selector\').val(), $(\'#projects_version_selector\').val() )\" id=\"projects_version_selector\" class="dropdown"></select></span></li>';
-
-							getProjectNames(function(
-									data) {
-								var selector = $("#projects_name_selector")
-								for (var i = 0; i < data.data.length; i++) {
-									selector
-											.append("<option>" + data.data[i] + "</option>")
-								}
-								populateProjectGroupSelection();
-							});
-							menu += '</ul>';
-							return menu;
-						}
-					});
-				$('#legend-menu').sidr({
-					name : 'right-menu',
-					side : 'right',
+		var resizeWindow = function() {
+			var width = $(window).width();
+			if(rightMenuOpen)
+				width -= $("#right-menu").width();
+			if(leftMenuOpen)
+				width -= $("#left-menu").width();
+			var height = $(window).height() - $("#header").height();
+			if(currentConnection != null)
+				currentConnection.updateSize(width, height);
+			if(currentConnectionTable != null)
+				currentConnectionTable.updateSize(width, height);
+			$("body").attr('width', width).attr('height', height);
+		}
+		$(window).resize(function(){
+			resizeWindow();
+		});
+		$(document).ready(function() {
+			var marginSize = 270;
+			$('#project-menu')
+				.sidr({
+					name : 'left-menu',
+					side : 'left',
 					displace : false,
 					onOpen : function() {
-						$("#rightmenu").css('margin-right', marginSize + 'px');
+						leftMenuOpen = true;
+						$("#leftmenu").css('margin-left', marginSize + "px");
+						$("#display").css('margin-left', $("#left-menu").css('width'));
+						resizeWindow();
 					},
 					onClose : function() {
-						$("#rightmenu").css('margin-right',0 + 'px');
+						leftMenuOpen = false;
+						$("#leftmenu").css('margin-left', 0 + 'px');
+						$("#display").css('margin-left', 0 + 'px');
+						resizeWindow();
 					},
+					source : function(name) {
+						getProjectNames(function(
+								data) {
+							var selector = $("#projects_name_selector")
+							for (var i = 0; i < data.data.length; i++) {
+								selector
+										.append("<option>" + data.data[i] + "</option>")
+							}
+							populateProjectGroupSelection();
+						});
+					}
 				});
-
+			$('#legend-menu').sidr({
+				name : 'right-menu',
+				side : 'right',
+				displace : false,
+				onOpen : function() {
+					rightMenuOpen = true;
+					$("#rightmenu").css('margin-right', marginSize + 'px');
+					resizeWindow();
+				},
+				onClose : function() {
+					rightMenuOpen = false;
+					$("#rightmenu").css('margin-right',0 + 'px');
+					resizeWindow();
+				},
 			});
+		});
 	</script>
 </body>
 </html>

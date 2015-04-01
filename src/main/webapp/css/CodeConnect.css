@@ -1,27 +1,27 @@
 circle.node {
-  cursor: pointer;
-  stroke: #000;
-  stroke-width: .5px;
+	cursor: pointer;
+	stroke: #000;
+	stroke-width: .5px;
 }
 
 circle.node.project {
-  stroke: #9ecae1;
-  stroke-width: 2px;
+	stroke: #9ecae1;
+	stroke-width: 2px;
 }
 
 circle.node.collapsed {
-  stroke: #555;
+	stroke: #555;
 }
 
 .nodetext {
-  fill: #252929;
-  font-weight: bold;
-  text-shadow: 0 0 0.2em white;
+	fill: #252929;
+	font-weight: bold;
+	text-shadow: 0 0 0.2em white;
 }
 
 text {
-    font: 15px sans-serif;
-    pointer-events: none;
+	font: 15px sans-serif;
+	pointer-events: none;
 }
 
 text.light {
@@ -42,8 +42,7 @@ textpath {
 }
 
 line.link {
-  /* stroke: #9ecae1; */
-  stroke-width: 3px;
+	stroke-width: 3px;
 }
 
 line.link.unselected {
@@ -52,9 +51,9 @@ line.link.unselected {
 }
 
 .linktext {
-  fill: #252929;
-  font-weight: bold;
-  text-shadow: 0 0 0.2em white;
+	fill: #252929;
+	font-weight: bold;
+	text-shadow: 0 0 0.2em white;
 }
 
 body{
@@ -83,30 +82,31 @@ body{
 }
 
 .swatch {
-  display: inline-block;
-  vertical-align: middle;
-  width: 37px;
-  height: 22px;
-  float: right;
+	display: inline-block;
+	vertical-align: middle;
+	width: 37px;
+	height: 22px;
+	float: right;
 }
 
 .node rect {
-  cursor: pointer;
-  fill: #fff;
-  fill-opacity: .5;
-  stroke: #3182bd;
-  stroke-width: 1.5px;
+	cursor: pointer;
+	fill: #fff;
+	fill-opacity: 1;
+	stroke: #24445C;
+	stroke-width: 1.5px;
 }
 
 .node text {
-  font: 10px sans-serif;
-  pointer-events: none;
+	font: 10px sans-serif;
+	pointer-events: none;
 }
 
 path.link {
-  fill: none;
-  stroke: #9ecae1;
-  stroke-width: 3px;
+	fill: none;
+	stroke: #9ecae1;
+	stroke-width: 3px;
+	stroke: #2A3F61;
 }
 
 .sidr .dropdown {
@@ -128,4 +128,8 @@ hr {
 rect {
 	stroke: #999;
 	fill: white;
+}
+
+.out_of_date_indicator {
+	fill: #992020;
 }

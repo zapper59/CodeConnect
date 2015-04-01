@@ -1,4 +1,3 @@
-
 var CodeConnectTable = function(selector){
 		this.margin = {top: 30, right: 20, bottom: 30, left: 20};
 		this.width = 960 - this.margin.left - this.margin.right;
@@ -20,31 +19,41 @@ var CodeConnectTable = function(selector){
 		.append("g")
 			.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-		$("display")
-			.removeAttr('width')
-			.removeAttr('height');
+		$(selector).css('position',"relative");
 		//TODO perhaps move this into update ??
 		this.populateLegend();
 	};
 
+CodeConnectTable.prototype.updateSize = function(w, h) {
+		this.width = w;
+		this.height = h;
+		this.svg.attr('width', w).attr('height', h);
+		$("body").attr('width', w).attr('height', h);
+	};
+
 CodeConnectTable.prototype.populateNodeText = function(d){
 		var text = d.name;
-		if( d.children && d.group ){
-			text += " --- Group[" + d.group + "]";
-		}
-		if( d.version ){
-			text += " --- Version[" + d.version + "]";
+		if( d.type ){
+			if(d.type == "group"){
+				text += " --- Group[" + d.group + "]";
+			}
+			if(d.type == "version"){
+				text = "Version[" + d.version + "]";
+			}
 		}
 		return text;
 	};
 
 CodeConnectTable.prototype.update = function(source, projectName) {
+		console.log("Updating Table");
+		this.margin = {top: 30, right: 20, bottom: 30, left: 20};
+		this.width = 960 - this.margin.left - this.margin.right;
+		this.barHeight = 20;
+		this.barWidth = this.width * .8;
+
 		if( this.root == undefined){
 			this.root = this.convert(source, projectName);
 		}
-	//	if( source.data != undefined){
-	//		source = this.convert(source);
-	//	}
 
 		var nodes = this.tree.nodes(this.root);
 
@@ -84,6 +93,28 @@ CodeConnectTable.prototype.update = function(source, projectName) {
 			.attr("dy", 3.5)
 			.attr("dx", 5.5)
 			.text(this.populateNodeText);
+
+		nodeEnter.append("text")
+			.attr("class", "out_of_date_indicator")
+			.attr("id", function(d){
+				return ""+d.type+"_"+d.name+"_"+d.group+"_"+d.version;
+			})
+			.attr("dy", 3.5)
+			.attr("dx", this.barWidth * .7)
+			.style("visibility",function(d){
+				if(d.outdated == true){
+					return "visible";
+				}
+				return "hidden";
+			})
+			.text(function(d){
+				if(d.type == "version"){
+					var ans = "OUT OF DATE";
+					if(d.newestVersion)ans += " :: "+d.newestVersion + " is newer";
+					return ans;
+				}
+				return "Contains out of date dependency";
+			})
 
 		// Transition nodes to their new position.
 		nodeEnter.transition()
@@ -139,6 +170,8 @@ CodeConnectTable.prototype.update = function(source, projectName) {
 			d.x0 = d.x;
 			d.y0 = d.y;
 		});
+
+		return this;
 	}
 
 CodeConnectTable.prototype.populateLegend = function(){
@@ -148,50 +181,134 @@ CodeConnectTable.prototype.populateLegend = function(){
 	};
 
 CodeConnectTable.prototype.convert = function(json, projectName){
-		//TODO Probably going to need to change this
-		var contains = function(name, group, arr){
+		console.log("json:");
+		console.log(json);
+		var containsProject = function(name, group, arr){
 			for(var i = 0; i < arr.length; i++){
-				if( arr[ i ].name == name && arr[ i ].group == group ){ return true; }
+				if (arr[i].name == name && arr[i].group == group) {return true;}
 			}
 			return false;
 		}
-		var retrieve = function(name, group, arr){
+		var containsVersion = function(name, group, version, arr){
+			for(var i in arr){
+				if( arr[i].name == name && arr [i].group == group && arr[i].version == version){return true;}
+			}
+			return false;
+		}
+		var retrieveProject = function(name, group, arr){
 			for(var i = 0; i < arr.length; i++){
-				if( arr[ i ].name == name && arr[ i ].group == group ){ return arr[i]; }
+				if( arr[ i ].name == name && arr[ i ].group == group){ return arr[i];}
 			}
 			return null;
 		}
-
+		var retrieveVersion = function(name, group, version, arr){
+			for(var i = 0; i < arr.length; i++){
+				if( arr[ i ].name == name && arr[ i ].group == group && arr[i].version == version){ return arr[i]; }
+			}
+			return null;
+		}
 		var nodes = {};
 		nodes.name = projectName;
+		nodes.type = "root";
 		nodes.children=[];
+		var checkOutdated = function(node, name, group, version){
+			isProjectOutdated(name, group, version, function(outdated, projectName, projectGroup, projectVersion, newestVersion){
+				if(outdated){
+					var curr = node;
+					while(curr){
+						curr.outdated = true;
+						var id = ""+curr.type+"_"+curr.name+"_"+curr.group+"_"+curr.version;
+						var element = d3.select("#display").select("text[id='"+id+"']");
+						if(element){
+							element.style("visibility", "visible");
+						}
+						if(curr.version){
+							element.text(element.text() + " :: " + newestVersion +" is newer");
+							curr.newestVersion = newestVersion;
+						}
+						if(! curr.parent){
+							break;
+						}
+						curr = curr.parent;
+					}
+				}
+			});
+		}
 		for(var i = 0; i < json.data.length; i++){
-			if ( !contains(json.data[i][0], json.data[i][1], nodes.children) ){
+			var versionAdded = true;
+			var currentNode;
+			if ( !containsProject(json.data[i][0], json.data[i][1], nodes.children) ){
 				var node = {
-						"name":json.data[i][0],
-						"group": json.data[i][1],
-						//Notice swapping names and relationtype, below as well, TODO Fix this hack
-						"children": [ { downstreamname: json.data[i][0], group: json.data[i][1], version: json.data[i][2], name:json.data[i][3] } ]
-						//"children": [ { name: json.data[i][0], group: json.data[i][1], version: json.data[i][2], relationtype:json.data[i][3] } ]
+					"name":json.data[i][0],
+					"group": json.data[i][1],
+					"type": "group",
+					"children": [ currentNode ={ downstreamname: json.data[i][0], group: json.data[i][1], version: json.data[i][2], name:json.data[i][0], type: "version",
+						"children": [{downstreamname: json.data[i][0], group: json.data[i][1], version: json.data[i][2], name:json.data[i][3], type: "dependency"}]
+					} ]
 				};
 				nodes.children.push( node );
 			}else{
-				var node = retrieve(json.data[i][0], json.data[i][1], nodes.children)
-				if( node ){
-					//node.children.push( {name: json.data[i][0], group: json.data[i][1], version: json.data[i][2], relationtype:json.data[i][3]} )
-					node.children.push( {downstreamname: json.data[i][0], group: json.data[i][1], version: json.data[i][2], name:json.data[i][3]} )
+				var node = retrieveProject(json.data[i][0], json.data[i][1], nodes.children);
+				if( !containsVersion(json.data[i][0], json.data[i][1], json.data[i][2], node.children)){
+					node.children.push(currentNode = {downstreamname: json.data[i][0], group: json.data[i][1], version: json.data[i][2], name:json.data[i][0], type: "version",
+						"children": [{downstreamname: json.data[i][0], group: json.data[i][1], version: json.data[i][2], name:json.data[i][3], type: "dependency"}]
+					} );
+				}else{
+					versionAdded = false;
+					var version = retrieveVersion(json.data[i][0], json.data[i][1], json.data[i][2], node.children);
+					version.children.push( {downstreamname: json.data[i][0], group: json.data[i][1], version: json.data[i][2], name:json.data[i][3], type: "dependency"} );
 				}
 			}
+			if(versionAdded){
+				checkOutdated(currentNode, json.data[i][0], json.data[i][1], json.data[i][2]);
+			}
 		}
+
 		nodes.x0 = 0;
 		nodes.y0 = 0;
+		console.log(nodes);
 		return nodes;
 	};
 
+CodeConnectTable.prototype.expandAll = function() {
+	if(this.root == undefined){
+		return;
+	}
+	var expand = function(d){
+		if(d._children){
+			d.children = d._children;
+			d._children = null;
+		}
+		if(d.children){
+			for(var i in d.children){
+				expand(d.children[i]);
+			}
+		}
+	};
+	expand(this.root);
+	this.update(this.root);
+}
+
+CodeConnectTable.prototype.collapseAll = function(d){
+	var update = false;
+	if(d == undefined) {
+		update = true;
+		d = this.root;
+	}
+	if(d.children){
+		for(var node in d.children){
+			this.collapseAll(d.children[node]);
+		}
+		d._children = d.children;
+		d.children = null;
+	}
+	if(update){
+		this.update(d);
+	}
+}
 CodeConnectTable.prototype.click = function(d) {
 		if (d.children) {
-			d._children = d.children;
-			d.children = null;
+			this.collapseAll(d);
 		} else {
 			d.children = d._children;
 			d._children = null;
@@ -200,5 +317,5 @@ CodeConnectTable.prototype.click = function(d) {
 	};
 
 CodeConnectTable.prototype.color = function(d) {
-		return d._children ? "#00628B" : d.children ? "#81A594" : "#E6E6DC";
-	};
+		return ( d.type == "root") ? "#668888" : (d._children ? "#5092B0" : (d.children ? "#81A594" : "#E6E6DC"));
+	}

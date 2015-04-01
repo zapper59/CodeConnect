@@ -16,23 +16,45 @@ function rgbToHex(rgb) {
 	return "#" + componentToHex(rgb.r) + componentToHex(rgb.g) + componentToHex(rgb.b);
 }
 
-function convertJsonResponseToNodes(projectName, json){
+function convertJsonResponseToNodes(projectName, projectVersion, json){
 	console.log("Converting Json Response to Node list:");
 	console.log(json);
 	var nodes = {};
 	nodes.name = projectName;
 	nodes.children=[];
+	nodes.versions=[];
+	nodes.versions.push(projectVersion);
 	for(var i = 0; i < json.data.length; i++){
 		nodes.children[i] = {name: json.data[i][0], group: json.data[i][1], version: json.data[i][2], relationtype:json.data[i][3]};
 	}
+	console.log(nodes.versions);
 	return nodes;
 }
 
 function generateRandomColor() {
-    var letters = '0123456789ABCDEF'.split('');
-    var color = '#';
-    for (var i=0; i<6; i++ ) {
-        color += letters[Math.floor(Math.random() * letters.length)];
-    }
-    return color;
+	var letters = '0123456789ABCDEF'.split('');
+	var color = '#';
+	for (var i=0; i<6; i++ ) {
+		color += letters[Math.floor(Math.random() * letters.length)];
+	}
+	return color;
 }
+
+function compareVersionStrings(one, two){
+	if (one == two) return 0;
+	var onearr = one.replace(/[^.\-0-9]/g,"").split(/[-.]/);
+	var twoarr = two.replace(/[^.\-0-9]/g,"").split(/[-.]/);
+
+	var ans = 0;
+	for(var i=0; i<onearr.length && i<twoarr.length; i++){
+		if(Number(onearr[i]) < Number(twoarr[i]))
+			return ans = -1;
+		if(Number(onearr[i]) > Number(twoarr[i]))
+			return ans = 1;
+	};
+	if(ans == 0){
+		if(onearr.length > twoarr.length)return 1;
+		if(onearr.length < twoarr.length)return -1;
+	}
+	return ans;
+};

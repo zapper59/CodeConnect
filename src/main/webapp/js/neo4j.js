@@ -41,7 +41,11 @@ getProjectGroups = function(projectName, callback){
 			cache: false,
 			dataType:"json",
 			success: function(data){
-				callback(data, projectName);
+				var unique = {"data":[]};
+				$.each(data.data, function(i, el){
+					if($.inArray(el[0], unique.data) === -1) unique.data.push(el[0]);
+				});
+				callback(unique, projectName);
 			},
 			error:function(xhr,err,msg){
 				console.log("Failed POST Query");
@@ -97,25 +101,17 @@ isProjectOutdated = function( projectName, projectGroup, projectVersion, callbac
 		cache: false,
 		dataType:"json",
 		success: function(data){
-			function compareVersionStrings(one, two){
-				if (one == two) return 0;
-				var onearr = one.replace(/[^.\-0-9]/g,"").split(/[-.]/);
-				var twoarr = two.replace(/[^.\-0-9]/g,"").split(/[-.]/);
-				for(var i = 0; i < onearr.length; i++){
-					if(Number(onearr[i]) < Number(twoarr[i]))
-						return -1;
-					if(Number(onearr[i]) > Number(twoarr[i]))
-						return 1;
-				}
-				return 0;
-			};
 			var outdated = false;
-			for (var x = 0; x<data.data.length; x++){
-				if(compareVersionStrings(projectVersion, data.data[x][0]) < 0){
+			var newest = projectVersion;
+			$.each(data.data, function(i, val){
+				if(compareVersionStrings(projectVersion, val[0]) < 0){
 					outdated = true;
 				}
-			}
-			callback(outdated, projectName, projectGroup, projectVersion);
+				if(compareVersionStrings(newest, val[0]) < 0){
+					newest = val[0];
+				}
+			})
+			callback(outdated, projectName, projectGroup, projectVersion, newest);
 		},
 		error:function(xhr,err,msg){
 			console.log("Failed POST Query");
@@ -126,26 +122,19 @@ isProjectOutdated = function( projectName, projectGroup, projectVersion, callbac
 	});
 }
 
-getProjectData = function( projectName, projectGroup, projectVersion, callback){
+getProjectData = function( projectName, projectGroup, projectVersion, callback, inbound){
 	var data = {}
-	if (!projectVersion){
-		data = {
-				"query":"MATCH (up:Project {name:{projectName}, group:{projectGroup}})<-[rel]-(down) RETURN down.name, down.group, down.version, type(rel)",
-				"params" : {
-					"projectName" : projectName,
-					"projectGroup" : projectGroup
-				}
-			};
-	}else{
-		data = {
-				"query":"MATCH (up:Project {name:{projectName}, group:{projectGroup}, version:{projectVersion}})<-[rel]-(down) RETURN down.name, down.group, down.version, type(rel)",
-				"params" : {
-					"projectName" : projectName,
-					"projectGroup" : projectGroup,
-					"projectVersion" : projectVersion
-				}
-			};
-	}
+	data = {
+		"query":"MATCH (up:Project {name:{projectName}, group:{projectGroup}"
+			+ ((projectVersion) ? ", version:{projectVersion}" : "")
+			+ "})" + (inbound ? "<-[rel]-" : "-[rel]->")
+			+ "(down) RETURN down.name, down.group, down.version, type(rel)",
+		"params" : {
+			"projectName" : projectName,
+			"projectGroup" : projectGroup,
+			"projectVersion" : projectVersion
+		}
+	};
 	$.ajax({
 		type: "POST",
 		url: "http://rcdn6-vm97-107:7474/db/data/cypher/",
