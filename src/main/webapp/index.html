@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
 
@@ -28,7 +28,7 @@
 	rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700'
 	rel='stylesheet' type='text/css'>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="">
@@ -54,86 +54,84 @@
 <body>
 	<div id="header">
 		<div id="leftmenu" class="leftmenu">
-			<a id="project-menu" href="#project-menu">PROJECT LIST</a>
+			<a id="project-menu" href="#project-menu">OPTIONS</a>
 		</div>
-		<div id="rightmenu" class="rightmenu">
-			<a id="legend-menu" href="#legend-menu">LEGEND</a>
-		</div>
+		<a id="backbutton" onclick="gotoPreviousProject()">BACK</a>
 		<hr>
 	</div>
 	<div id="left-menu">
-		<div id="left-menu-contents">
-			<div>
-				<h3 id="projects-list-header">Projects:</h3>
-				<select onchange="populateProjectGroupSelection()" id="projects_name_selector" class="dropdown"></select>
-				<h3 id="group-list-header" style="display: none;">Groups:</h3>
-				<select onchange="populateProjectVersionSelection()" id="projects_group_selector" class="dropdown"></select>
-				<h3 id="version-list-header">Versions:</h3>
-				<select style="display: none;"
-				onchange="updateVisualization($('#projects_name_selector').val(), $('#projects_group_selector').val(), $('#projects_version_selector').val())"
-				id="projects_version_selector" class="dropdown"></select>
-			</div>
+		<div>
+			<h3 id="projects-list-header">Projects:
+			<select onchange="populateProjectGroupSelection()" id="projects_name_selector" class="dropdown"></select></h3>
+			<h3 id="group-list-header" style="display: none;">Groups:
+			<select onchange="populateProjectVersionSelection()" id="projects_group_selector" class="dropdown"></select></h3>
+			<h3 id="version-list-header">Versions:
+			<select style="display: none;"
+			onchange="updateVisualization($('#projects_name_selector').val(), $('#projects_group_selector').val(), $('#projects_version_selector').val())"
+			id="projects_version_selector" class="dropdown"></select></h3>
 		</div>
-	</div>
-	<div id="right-menu">
-		<h1 id="control-legend-header">Controls</h1>
-		<h3>
-			View <select id="viewselect" class="dropdown"
-				onchange="javascript:updateVisualization(currentProject, currentGroup, currentVersion)">
-				<option value="connection">Connection</option>
-				<option value="text">Text</option>
-			</select>
+		<h3 id="control-legend-header">Controls
+			<ul>
+				<li><h3>
+					View <select id="viewselect" class="dropdown"
+						onchange="javascript:updateVisualization(currentProject, currentGroup, currentVersion)">
+						<option value="connection">Connection</option>
+						<option value="text">Text</option>
+					</select>
+				</h3></li>
+				<li><h3>
+					Show Inbound Instead of Out <input type="checkbox"
+						onclick="javascript:updateVisualization(currentProject, currentGroup, currentVersion)"
+						id="inbound" name="inbound" style="float: right;">
+				</h3></li>
+				<li id="codeconnect-options">
+					<h3>
+						Reset <input id="resetbtn" type="button" class="swatch"
+							onclick="javascript:currentConnection.assignCurrent(undefined,undefined)">
+					</h3>
+					<h3>
+						Limit to: <select id="limitselect" class="dropdown"
+							onchange="javascript:currentConnection.update()">
+							<option value="both">All Ages</option>
+							<option value="outofdate">Out of date</option>
+							<option value="uptodate">Up to date</option>
+						</select>
+					</h3>
+					<h3>
+						Show versions separately <input type="checkbox"
+							onclick="javascript:currentConnection.update()"
+							id="show-versions-separately" name="show-versions-separately" style="float: right;">
+					</h3>
+					<h3>
+						Dependency Labels <input type="checkbox"
+							onclick="javascript:currentConnection.update()"
+							id="dependency-label" name="dependency-label" style="float: right;" checked>
+					</h3>
+					<h3>
+						Downstream Labels <input type="checkbox"
+							onclick="javascript:currentConnection.update()"
+							id="downstream-label" name="downstream-label" style="float: right;">
+					</h3>
+					<h3>
+						Separate Downstream Lines <input type="checkbox"
+							onclick="javascript:currentConnection.update()"
+							id="separate-downstream-lines" name="separate-downstream-lines" style="float: right;">
+					</h3>
+				</li>
+				<li id="codeconnecttable-options">
+					<h3>
+						Expand All <input id="expandbtn" type="button" class="swatch"
+							onclick="javascript:currentConnectionTable.expandAll()">
+					</h3>
+					<h3>
+						Collapse All <input id="collapsebtn" type="button" class="swatch"
+							onclick="javascript:currentConnectionTable.collapseAll();">
+					</h3>
+				</li>
+			</ul>
 		</h3>
-		<h3>
-			Show inbound instead of outbound <input type="checkbox"
-				onclick="javascript:updateVisualization(currentProject, currentGroup, currentVersion)"
-				id="inbound" name="inbound" style="float: right;">
-		</h3>
-		<div id="codeconnect-options">
-			<h3>
-				Reset <input id="resetbtn" type="button" class="swatch"
-					onclick="javascript:currentConnection.assignCurrent(undefined,undefined)">
-			</h3>
-			<h3>
-				Limit to: <select id="limitselect" class="dropdown"
-					onchange="javascript:currentConnection.update()">
-					<option value="both">Both</option>
-					<option value="outofdate">Out of date</option>
-					<option value="uptodate">Up to date</option>
-				</select>
-			</h3>
-			<h3>
-				Show versions separately <input type="checkbox"
-					onclick="javascript:currentConnection.update()"
-					id="show-versions-separately" name="show-versions-separately" style="float: right;">
-			</h3>
-			<h3>
-				Dependency Labels <input type="checkbox"
-					onclick="javascript:currentConnection.update()"
-					id="dependency-label" name="dependency-label" style="float: right;" checked>
-			</h3>
-			<h3>
-				Downstream Labels <input type="checkbox"
-					onclick="javascript:currentConnection.update()"
-					id="downstream-label" name="downstream-label" style="float: right;">
-			</h3>
-			<h3>
-				Separate Downstream Lines <input type="checkbox"
-					onclick="javascript:currentConnection.update()"
-					id="separate-downstream-lines" name="separate-downstream-lines" style="float: right;" checked>
-			</h3>
-		</div>
-		<div id="codeconnecttable-options">
-			<h3>
-				Expand All <input id="expandbtn" type="button" class="swatch"
-					onclick="javascript:currentConnectionTable.expandAll()">
-			</h3>
-			<h3>
-				Collapse All <input id="collapsebtn" type="button" class="swatch"
-					onclick="javascript:currentConnectionTable.collapseAll();">
-			</h3>
-		</div>
-		<div id="right-menu-contents"></div>
+		
+		<div id="legend-contents"></div>
 	</div>
 
 	<div id="display"></div>
@@ -165,16 +163,18 @@
 		var currentProject;
 		var currentGroup;
 		var currentVersion;
+		var searchForGroup;
+		var searchForVersion;
+		var currentProjectNode = {};
 		var leftMenuOpen = false;
-		var rightMenuOpen = false;/* menu = '<ul id="project-menu-contents"><span>'
-		+ '<h3 id="projects-list-header">Projects:</h3><select onchange="populateProjectGroupSelection()" id="projects_name_selector" class="dropdown"></select>'
-		+ '<h3 id="group-list-header" style="display:none;">Groups:</h3><select style="display:none;" onchange="populateProjectVersionSelection()" id="projects_group_selector" class="dropdown"></select>'
-		+ '<h3 id="version-list-header" style="display:none;">Versions:</h3><select style="display:none;" onchange="updateVisualization($("#projects_name_selector").val(), $("#projects_group_selector").val(), $("#projects_version_selector").val() )" id="projects_version_selector" class="dropdown"></select></span></li>';
-*/
 
 		var createCodeConnection = function(json) {
 			$("#codeconnect-options").show();
 			$("#codeconnecttable-options").hide();
+			if(currentProjectNode.previous && currentProjectNode.previous.previous)
+				$("#backbutton").show();
+			else
+				$("#backbutton").hide();
 			console.log("CreateCodeConnect :: ");
 			json = convertJsonResponseToNodes(currentProject, currentVersion, json);
 			console.log(json);
@@ -193,6 +193,7 @@
 		var createCodeConnectionTable = function(json) {
 			$("#codeconnect-options").hide()
 			$("#codeconnecttable-options").show();
+			$("#backbutton").hide();
 			if (currentConnection)
 				currentConnection = undefined;
 			currentConnectionTable = new CodeConnectTable("#display").update(
@@ -200,17 +201,13 @@
 			resizeWindow();
 		}
 
-		//Use for Development
-		//d3.json('testdata.json', createCodeConnection);
-
 		var updateVisualization = function(projectName, projectGroup, version) {
 			console.log("Updating visualization with Project Data ["
 					+ projectName + "]");
-			var projectVersion = currentVersion;
-			if (version) {
-				projectVersion = version;
-			}
+			var projectVersion = (version ? version : currentVersion);
 			console.log("using this version :: " + projectVersion);
+			if(!currentProjectNode.previous || !(projectName == currentProjectNode.name && projectGroup == currentProjectNode.group && projectVersion == currentProjectNode.version))
+				currentProjectNode = {"name": projectName, "group": projectGroup, "version": projectVersion, "previous": currentProjectNode};
 			getProjectData(projectName, projectGroup, projectVersion, function(
 					data, name, group, version) {
 				console.log("Getting Project data returned this :: ");
@@ -238,6 +235,15 @@
 				for (var i = 0; i < data.data.length; i++) {
 					selector.append("<option>" + data.data[i] + "</option>")
 				}
+				if(searchForGroup){
+					$.each(selector.children(), function(i, val){
+						if(val.value == searchForGroup){
+							selector.val(searchForGroup);
+							return false;
+						}
+					});
+					searchForGroup = null;
+				}
 				populateProjectVersionSelection();
 			});
 			$("#group-list-header").attr("style", "display:block");
@@ -254,15 +260,41 @@
 				for (var i = 0; i < data.length; i++) {
 					selector.append("<option>" + data[i] + "</option>")
 				}
+				if(searchForVersion){
+					$.each(selector.children(), function(i, val){
+						if(val.value == searchForVersion){
+							selector.val(searchForVersion);
+							return false;
+						}
+					});
+					searchForVersion = null;
+				}
 				updateVisualization(name, group,
 						$("#projects_version_selector").val());
 			});
 			$("#version-list-header").attr("style", "display:block");
 		}
+		var openProject = function(name, group, version){
+			searchForGroup = group;
+			searchForVersion = version;
+			$.each($("#projects_name_selector option"), function(i, val){
+				if(val.value == name){
+					$("#projects_name_selector").val(val.value);
+					populateProjectGroupSelection();
+					return false;
+				}
+			});
+		}
+		var gotoPreviousProject = function(){
+			if(currentProjectNode.previous && currentProjectNode.previous.previous){
+				var open = currentProjectNode.previous;
+				currentProjectNode = currentProjectNode.previous.previous;
+				openProject(open.name, open.group, open.version);
+			}
+		}
+		
 		var resizeWindow = function() {
 			var width = $(window).width();
-			if(rightMenuOpen)
-				width -= $("#right-menu").width();
 			if(leftMenuOpen)
 				width -= $("#left-menu").width();
 			var height = $(window).height() - $("#header").height();
@@ -276,7 +308,7 @@
 			resizeWindow();
 		});
 		$(document).ready(function() {
-			var marginSize = 270;
+			var marginSize = 275;
 			$('#project-menu')
 				.sidr({
 					name : 'left-menu',
@@ -295,32 +327,16 @@
 						resizeWindow();
 					},
 					source : function(name) {
-						getProjectNames(function(
-								data) {
+						getProjectNames(function(data) {
 							var selector = $("#projects_name_selector")
 							for (var i = 0; i < data.data.length; i++) {
-								selector
-										.append("<option>" + data.data[i] + "</option>")
+								selector.append("<option>" + data.data[i] + "</option>")
 							}
 							populateProjectGroupSelection();
 						});
 					}
 				});
-			$('#legend-menu').sidr({
-				name : 'right-menu',
-				side : 'right',
-				displace : false,
-				onOpen : function() {
-					rightMenuOpen = true;
-					$("#rightmenu").css('margin-right', marginSize + 'px');
-					resizeWindow();
-				},
-				onClose : function() {
-					rightMenuOpen = false;
-					$("#rightmenu").css('margin-right',0 + 'px');
-					resizeWindow();
-				},
-			});
+			$.sidr('open', 'left-menu');
 		});
 	</script>
 </body>

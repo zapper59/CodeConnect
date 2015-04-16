@@ -13,12 +13,6 @@ circle.node.collapsed {
 	stroke: #555;
 }
 
-.nodetext {
-	fill: #252929;
-	font-weight: bold;
-	text-shadow: 0 0 0.2em white;
-}
-
 text {
 	font: 15px sans-serif;
 	pointer-events: none;
@@ -31,7 +25,6 @@ text.light {
 
 text.shadow {
 	stroke: white;
-	color: white;
 	stroke-width: 5px;
 	stroke-opacity: .9;
 }
@@ -74,11 +67,13 @@ body{
 	font-weight: bold;
 }
 
-.rightmenu{
+#backbutton{
 	display: inline-block;
 	float: right;
 	fill: #252929;
 	font-weight: bold;
+	margin-right: 10px;
+	cursor: pointer;
 }
 
 .swatch {
@@ -97,9 +92,23 @@ body{
 	stroke-width: 1.5px;
 }
 
+g.nodetext rect{
+	fill: transparent;
+	stroke: none;
+}
+
 .node text {
 	font: 10px sans-serif;
 	pointer-events: none;
+}
+
+g.text_underline rect{
+	pointer-events: auto;
+	cursor: pointer;
+}
+
+g.text_underline text.shadow{
+	stroke: #dddddd;
 }
 
 path.link {
@@ -125,7 +134,7 @@ hr {
 	border-color: #aaaaaa;
 }
 
-rect {
+rect.body_rect {
 	stroke: #999;
 	fill: white;
 }

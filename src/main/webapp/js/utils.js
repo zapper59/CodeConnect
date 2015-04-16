@@ -45,6 +45,8 @@ function compareVersionStrings(one, two){
 	var onearr = one.replace(/[^.\-0-9]/g,"").split(/[-.]/);
 	var twoarr = two.replace(/[^.\-0-9]/g,"").split(/[-.]/);
 
+	if (onearr.length == 0)return -1;
+	if (twoarr.length == 0)return 1;
 	var ans = 0;
 	for(var i=0; i<onearr.length && i<twoarr.length; i++){
 		if(Number(onearr[i]) < Number(twoarr[i]))
