@@ -1,3 +1,4 @@
+"use strict";
 var CodeConnectTable = function(selector){
 		this.margin = {top: 30, right: 20, bottom: 30, left: 20};
 		this.width = 960 - this.margin.left - this.margin.right;

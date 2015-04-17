@@ -1,3 +1,4 @@
+"use strict";
 var CodeConnect = function(selector, w, h) {
 	this.w = w;
 	this.h = h;
@@ -46,6 +47,7 @@ CodeConnect.prototype.updateSize = function(w, h) {
 	this.force.size([ w, h ]).start();
 };
 CodeConnect.prototype.update = function(json, projectName) {
+	if(this.killCodeConnect)return;
 	console.log("Updating Connection");
 	console.log(json);
 	if (json) {
@@ -55,7 +57,9 @@ CodeConnect.prototype.update = function(json, projectName) {
 	if (projectName) {
 		this.projectName = projectName;
 	}
-
+	if(!this.metadata){
+		return;
+	}
 	this.json.fixed = true;
 	this.json.x = this.w / 2;
 	this.json.y = this.h / 2;
@@ -199,6 +203,7 @@ CodeConnect.prototype.update = function(json, projectName) {
 };
 
 CodeConnect.prototype.tick = function() {
+	if(this.killCodeConnect)return;
 	var h = this.h;
 	var w = this.w;
 
@@ -308,7 +313,9 @@ CodeConnect.prototype.shouldDownstreamShowSelected = function(d) {
 
 CodeConnect.prototype.cleanup = function() {
 	console.log("cleaning old connection");
-	this.update();
+	this.metadata = null;
+	this.killCodeConnect = true;
+	this.force.stop();
 };
 
 CodeConnect.prototype.click = function(d) {
@@ -488,6 +495,7 @@ CodeConnect.prototype.flattenAndGatherMeta = function(root) {
 			link.target = val;
 			projectLinks.push(link);
 		}
+		val.versions.sort(function(a,b){return -compareVersionStrings(a,b)});
 	});
 	$.each(nodes, function(i, val) {
 		if (val.name != source.name) {
@@ -528,22 +536,22 @@ CodeConnect.prototype.nodeMouseout = function(d) {
 	}
 };
 CodeConnect.prototype.textMouseover = function(d){
-	if(d.versions.length==1 && d.name && d.group && d.version){
+	if(d.versions.length>=1 && d.name && d.group && d.version){
 		var id = ""+d.name + "-" + d.group + "-" + d.version + "-NODE";
 		var element = d3.select("#display").select("g[id='"+id+"']");
 		element.attr("class","nodetext text_underline");
 	}
 }
 CodeConnect.prototype.textMouseout = function(d){
-	if(d.versions.length==1 && d.name && d.group && d.version){
+	if(d.versions.length>=1 && d.name && d.group && d.version){
 		var id = ""+d.name + "-" + d.group + "-" + d.version + "-NODE";
 		var element = d3.select("#display").select("g[id='"+id+"']");
 		element.attr("class", "nodetext");
 	}
 }
 CodeConnect.prototype.nodeClick = function(d){
-	if(d.versions.length==1 && d.name && d.group && d.version){
-		openProject(d.name, d.group, d.version);
+	if(d.versions.length>=1 && d.name && d.group && d.version){
+		openProject(d.name, d.group, d.versions ? d.versions[0] : d.version);
 	}
 }
 CodeConnect.prototype.assignCurrent = function(type, value) {

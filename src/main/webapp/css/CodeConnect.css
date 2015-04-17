@@ -67,13 +67,8 @@ body{
 	font-weight: bold;
 }
 
-#backbutton{
-	display: inline-block;
-	float: right;
-	fill: #252929;
-	font-weight: bold;
-	margin-right: 10px;
-	cursor: pointer;
+#project-menu{
+	margin-left: 10px;
 }
 
 .swatch {

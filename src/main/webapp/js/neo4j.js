@@ -1,5 +1,6 @@
+"use strict";
 //TODO refactor this file
-getProjectNames = function(callback){
+var getProjectNames = function(callback){
 	var data = {
 			"query":"MATCH (up:Project) RETURN DISTINCT up.name ORDER BY up.name",
 			"params" : {
@@ -25,7 +26,7 @@ getProjectNames = function(callback){
 		});
 }
 
-getProjectGroups = function(projectName, callback){
+var getProjectGroups = function(projectName, callback){
 	var data = {
 			"query":"MATCH (up:Project {name:{projectName}}) RETURN up.group",
 			"params" : {
@@ -56,7 +57,7 @@ getProjectGroups = function(projectName, callback){
 		});
 }
 
-getProjectVersions = function( projectName, projectGroup, callback ){
+var getProjectVersions = function( projectName, projectGroup, callback ){
 	var data = {
 		"query":"MATCH (up:Project {name:{projectName}, group:{projectGroup}}) RETURN up.version",
 		"params" : {
@@ -84,7 +85,7 @@ getProjectVersions = function( projectName, projectGroup, callback ){
 	});
 }
 
-isProjectOutdated = function( projectName, projectGroup, projectVersion, callback ){
+var isProjectOutdated = function( projectName, projectGroup, projectVersion, callback ){
 	var data = {
 		"query":"MATCH (up:Project {name:{projectName}, group:{projectGroup}}) RETURN up.version",
 		"params" : {
@@ -122,7 +123,7 @@ isProjectOutdated = function( projectName, projectGroup, projectVersion, callbac
 	});
 }
 
-getProjectData = function( projectName, projectGroup, projectVersion, callback, inbound){
+var getProjectData = function( projectName, projectGroup, projectVersion, callback, inbound){
 	var data = {}
 	data = {
 		"query":"MATCH (up:Project {name:{projectName}, group:{projectGroup}"

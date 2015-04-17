@@ -54,9 +54,8 @@
 <body>
 	<div id="header">
 		<div id="leftmenu" class="leftmenu">
-			<a id="project-menu" href="#project-menu">OPTIONS</a>
+			<a id="project-menu" href="#project-menu"></a>
 		</div>
-		<a id="backbutton" onclick="gotoPreviousProject()">BACK</a>
 		<hr>
 	</div>
 	<div id="left-menu">
@@ -81,7 +80,7 @@
 				</h3></li>
 				<li><h3>
 					Show Inbound Instead of Out <input type="checkbox"
-						onclick="javascript:updateVisualization(currentProject, currentGroup, currentVersion)"
+						onclick="javascript:openProject(currentProject, currentGroup, currentVersion)"
 						id="inbound" name="inbound" style="float: right;">
 				</h3></li>
 				<li id="codeconnect-options">
@@ -130,7 +129,6 @@
 				</li>
 			</ul>
 		</h3>
-		
 		<div id="legend-contents"></div>
 	</div>
 
@@ -140,13 +138,11 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="js/jquery-1.10.2.min.js"></script>
 	<script src="js/jquery-xcolor/jquery.xcolor.min.js"></script>
-
 	<script src="js/bootstrap.min.js"></script>
 	<!-- Include the Sidr JS -->
 	<script src="js/sidr/jquery.sidr.min.js"></script>
 	<!-- Include d3.js -->
 	<script src="js/d3/d3.js"></script>
-	<script src="http://d3js.org/colorbrewer.v1.min.js"></script>
 	<!-- Include utility file -->
 	<script src="js/utils.js"></script>
 	<script src="js/neo4j.js"></script>
@@ -154,27 +150,24 @@
 	<script src="js/CodeConnect.js"></script>
 	<script src="js/CodeConnectTable.js"></script>
 	<!-- Validation	-->
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.34/jquery.form-validator.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
 
 	<!-- For Development, TODO:: load information from database -->
 
 	<script>
+		"use strict";
 		var currentConnection, currentConnectionTable;
 		var currentProject;
 		var currentGroup;
 		var currentVersion;
 		var searchForGroup;
 		var searchForVersion;
-		var currentProjectNode = {};
 		var leftMenuOpen = false;
+		var currentHash = "foo";
 
 		var createCodeConnection = function(json) {
 			$("#codeconnect-options").show();
 			$("#codeconnecttable-options").hide();
-			if(currentProjectNode.previous && currentProjectNode.previous.previous)
-				$("#backbutton").show();
-			else
-				$("#backbutton").hide();
 			console.log("CreateCodeConnect :: ");
 			json = convertJsonResponseToNodes(currentProject, currentVersion, json);
 			console.log(json);
@@ -182,10 +175,8 @@
 			// remove previous
 			if (currentConnection)
 				currentConnection.cleanup();
-			w = $(window).width();
-			h = $(window).height() - $("#header").height();
 			// create a new CodeConnection
-			currentConnection = new CodeConnect("#display", w, h).update(json,
+			currentConnection = new CodeConnect("#display", $(window).width(), $(window).height() - $("#header").height()).update(json,
 					currentProject);
 			resizeWindow();
 		}
@@ -206,27 +197,28 @@
 					+ projectName + "]");
 			var projectVersion = (version ? version : currentVersion);
 			console.log("using this version :: " + projectVersion);
-			if(!currentProjectNode.previous || !(projectName == currentProjectNode.name && projectGroup == currentProjectNode.group && projectVersion == currentProjectNode.version))
-				currentProjectNode = {"name": projectName, "group": projectGroup, "version": projectVersion, "previous": currentProjectNode};
+			window.location.hash = currentHash = ""+projectName+"_"+projectGroup+"_"+projectVersion;
+			currentProject = projectName;
+			currentGroup = projectGroup;
+			currentVersion = projectVersion;
 			getProjectData(projectName, projectGroup, projectVersion, function(
 					data, name, group, version) {
-				console.log("Getting Project data returned this :: ");
-				console.log(data);
-				currentProject = name;
-				currentGroup = group;
-				currentVersion = version;
-				$("#display").empty()
-				if ($("#viewselect").val() == "text") {
-					console.log("Creating TABLE");
-					createCodeConnectionTable(data);
-				} else {
-					console.log("Creating connection");
-					createCodeConnection(data);
+				if(currentHash == name + "_" + group + "_" + version){
+					console.log("Getting Project data returned this :: ");
+					console.log(data);
+					$("#display").empty()
+					if ($("#viewselect").val() == "text") {
+						console.log("Creating TABLE");
+						createCodeConnectionTable(data);
+					} else {
+						console.log("Creating connection");
+						createCodeConnection(data);
+					}
 				}
 			}, $("#inbound").is(":checked"));
 		}
 		var populateProjectGroupSelection = function() {
-			console.log("population group selector");
+			console.log("populating group selector");
 			getProjectGroups($("#projects_name_selector").val(), function(data,
 					name) {
 				var selector = $("#projects_group_selector");
@@ -249,7 +241,7 @@
 			$("#group-list-header").attr("style", "display:block");
 		}
 		var populateProjectVersionSelection = function() {
-			console.log("population version selector");
+			console.log("populating version selector");
 			getProjectVersions($("#projects_name_selector").val(), $(
 					"#projects_group_selector").val(), function(data, name,
 					group) {
@@ -285,14 +277,6 @@
 				}
 			});
 		}
-		var gotoPreviousProject = function(){
-			if(currentProjectNode.previous && currentProjectNode.previous.previous){
-				var open = currentProjectNode.previous;
-				currentProjectNode = currentProjectNode.previous.previous;
-				openProject(open.name, open.group, open.version);
-			}
-		}
-		
 		var resizeWindow = function() {
 			var width = $(window).width();
 			if(leftMenuOpen)
@@ -304,11 +288,21 @@
 				currentConnectionTable.updateSize(width, height);
 			$("body").attr('width', width).attr('height', height);
 		}
-		$(window).resize(function(){
-			resizeWindow();
-		});
+		$(window).resize(resizeWindow);
+		var openProjectByHash = function(){
+			if(location.hash == ""){
+				location.hash = currentHash;
+			}
+			if(location.hash.substring(1) != currentHash){
+				var s = location.hash.substring(1).split("_");
+				if(s.length == 3){
+					openProject(s[0], s[1], s[2]);
+				}
+			}
+		};
+		$(window).bind('hashchange', openProjectByHash);
 		$(document).ready(function() {
-			var marginSize = 275;
+			var marginSize = 260;
 			$('#project-menu')
 				.sidr({
 					name : 'left-menu',
@@ -317,12 +311,14 @@
 					onOpen : function() {
 						leftMenuOpen = true;
 						$("#leftmenu").css('margin-left', marginSize + "px");
+						$("#project-menu").text("<<");
 						$("#display").css('margin-left', $("#left-menu").css('width'));
 						resizeWindow();
 					},
 					onClose : function() {
 						leftMenuOpen = false;
 						$("#leftmenu").css('margin-left', 0 + 'px');
+						$("#project-menu").text(">>");
 						$("#display").css('margin-left', 0 + 'px');
 						resizeWindow();
 					},
@@ -332,7 +328,10 @@
 							for (var i = 0; i < data.data.length; i++) {
 								selector.append("<option>" + data.data[i] + "</option>")
 							}
-							populateProjectGroupSelection();
+							if(location.hash == "")
+								populateProjectGroupSelection();
+							else
+								openProjectByHash();
 						});
 					}
 				});
