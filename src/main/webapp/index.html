@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-<link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+<!-- <link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
 <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
 <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
 <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
@@ -21,7 +21,8 @@
 <meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
 <meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
 <meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
-<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+<meta name="msapplication-square310x310logo" content="mstile-310x310.png" /> -->
+<link href="icons/favicon.ico" rel="shorcut icon" type="image/x-icon">
 
 <link
 	href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700'
@@ -164,6 +165,7 @@
 		var searchForVersion;
 		var leftMenuOpen = false;
 		var currentHash = "foo";
+		var currentPageID = 0;
 
 		var createCodeConnection = function(json) {
 			$("#codeconnect-options").show();
@@ -203,7 +205,7 @@
 			currentVersion = projectVersion;
 			getProjectData(projectName, projectGroup, projectVersion, function(
 					data, name, group, version) {
-				if(currentHash == name + "_" + group + "_" + version){
+				if(this.id == currentPageID){
 					console.log("Getting Project data returned this :: ");
 					console.log(data);
 					$("#display").empty()
@@ -215,7 +217,7 @@
 						createCodeConnection(data);
 					}
 				}
-			}, $("#inbound").is(":checked"));
+			}.bind({id: ++currentPageID}), $("#inbound").is(":checked"));
 		}
 		var populateProjectGroupSelection = function() {
 			console.log("populating group selector");
@@ -246,7 +248,7 @@
 					"#projects_group_selector").val(), function(data, name,
 					group) {
 				var selector = $("#projects_version_selector");
-				data = data.data.reverse();
+				data = data.data.sort(function(a,b){return -compareVersionStrings(a,b);});
 				selector.empty();
 				selector.attr("style", null);
 				for (var i = 0; i < data.length; i++) {
