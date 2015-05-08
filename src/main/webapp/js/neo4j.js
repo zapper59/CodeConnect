@@ -1,5 +1,6 @@
 "use strict";
 //TODO refactor this file
+var NEO4J_SERVER_URL = "http://rcdn6-vm97-107:7474/db/data/cypher/";
 var getProjectNames = function(callback){
 	var data = {
 			"query":"MATCH (up:Project) RETURN DISTINCT up.name ORDER BY up.name",
@@ -8,7 +9,7 @@ var getProjectNames = function(callback){
 			};
 		$.ajax({
 			type: "POST",
-			url: "http://rcdn6-vm97-107:7474/db/data/cypher/",
+			url: NEO4J_SERVER_URL,
 			headers: {"Accept": "application/json",
 					 "Content-Type":"application/json"},
 			data: JSON.stringify(data),
@@ -35,7 +36,7 @@ var getProjectGroups = function(projectName, callback){
 			};
 		$.ajax({
 			type: "POST",
-			url: "http://rcdn6-vm97-107:7474/db/data/cypher/",
+			url: NEO4J_SERVER_URL,
 			headers: {"Accept": "application/json",
 					 "Content-Type":"application/json"},
 			data: JSON.stringify(data),
@@ -67,7 +68,7 @@ var getProjectVersions = function( projectName, projectGroup, callback ){
 		};
 	$.ajax({
 		type: "POST",
-		url: "http://rcdn6-vm97-107:7474/db/data/cypher/",
+		url: NEO4J_SERVER_URL,
 		headers: {"Accept": "application/json",
 				 "Content-Type":"application/json"},
 		data: JSON.stringify(data),
@@ -95,7 +96,7 @@ var isProjectOutdated = function( projectName, projectGroup, projectVersion, cal
 		};
 	$.ajax({
 		type: "POST",
-		url: "http://rcdn6-vm97-107:7474/db/data/cypher/",
+		url: NEO4J_SERVER_URL,
 		headers: {"Accept": "application/json",
 				 "Content-Type":"application/json"},
 		data: JSON.stringify(data),
@@ -138,7 +139,7 @@ var getProjectData = function( projectName, projectGroup, projectVersion, callba
 	};
 	$.ajax({
 		type: "POST",
-		url: "http://rcdn6-vm97-107:7474/db/data/cypher/",
+		url: NEO4J_SERVER_URL,
 		headers: {"Accept": "application/json",
 				 "Content-Type":"application/json"},
 		data: JSON.stringify(data),

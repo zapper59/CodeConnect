@@ -47,9 +47,9 @@ CodeConnect.prototype.updateSize = function(w, h) {
 	this.force.size([ w, h ]).start();
 };
 CodeConnect.prototype.update = function(json, projectName) {
-	if(this.killCodeConnect)return;
 	console.log("Updating Connection");
-	console.log(json);
+	console.log(this.killCodeConnect);
+	if(this.killCodeConnect)return;
 	if (json) {
 		this.json = json;
 		this.metadata = this.flattenAndGatherMeta(this.json);
