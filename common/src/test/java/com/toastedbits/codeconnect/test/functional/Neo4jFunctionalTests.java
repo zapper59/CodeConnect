@@ -22,7 +22,7 @@ import com.toastedbits.plugins.codeconnect.exceptions.CodeConnectException;
 @Ignore("Depends on local neo4j server configured")
 public class Neo4jFunctionalTests {
 	private static final Logger LOG = LoggerFactory.getLogger(Neo4jFunctionalTests.class);
-	private static final Client CLIENT = buildClient("neo4j", "admin");
+	private static final Client CLIENT = buildClient("neo4j", "neo4j");
 	private static final String BASE_URL = "http://localhost:7474";
 	private static final String COMPILE = "compile";
 	private static final String RUNTIME = "runtime";

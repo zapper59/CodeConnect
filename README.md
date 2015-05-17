@@ -47,7 +47,10 @@ gradle -Dcodeconnect.upstream="log4j:log4j:4.12" showDownstream
 
 ## TODO
 * Write better tests
+* Use a container (docker) to spin up neo4j for tests
 * Use proper snapshot/release jar handling
+* Cleanup webapp (select and use a framework)
+* Publish to mavenCentral and gradle plugin repository
 
 ## Release Notes
 ### 0.1.0

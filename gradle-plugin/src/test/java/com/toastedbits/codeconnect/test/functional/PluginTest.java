@@ -8,8 +8,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.toastedbits.plugins.codeconnect.CodeConnectGradleExtension;
-
 //TODO: Find a way to add some dependencies to the dummy project
 @Ignore("Depends on local neo4j server configured")
 public class PluginTest {
@@ -19,12 +17,8 @@ public class PluginTest {
 	public static void setup() {
 		project = ProjectBuilder.builder().build();
 		project.getPluginManager().apply("codeconnect");
-		CodeConnectGradleExtension ccExt = project.getExtensions().getByType(CodeConnectGradleExtension.class);
 		project.setGroup("cc-test");
 		project.setVersion("0.0.1");
-//		ccExt.setUrl("http://localhost:7474");
-//		ccExt.setUsername("neo4j");
-		ccExt.setPassword("admin");
 	}
 
 	@Test

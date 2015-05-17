@@ -2,7 +2,7 @@
 //TODO refactor this file
 var NEO4J_SERVER_URL = "http://localhost:7474/db/data/cypher";
 var NEO4J_USER = "neo4j";
-var NEO4J_PASSWORD = "admin";
+var NEO4J_PASSWORD = "neo4j";
 
 var getProjectNames = function(callback){
 	var data = {
