@@ -14,15 +14,20 @@ public class ReportUpstreamTask extends DefaultTask {
 	private static final Logger LOG = LoggerFactory.getLogger(ReportUpstreamTask.class);
 
 	@TaskAction
-	public void reportUpstream() {
+	public void reportUpstream() throws CodeConnectException {
+		CodeConnectGradleExtension ext = getProject().getExtensions().findByType(CodeConnectGradleExtension.class);
+
 		try {
-			CodeConnectGradleExtension ext = getProject().getExtensions().findByType(CodeConnectGradleExtension.class);
 			DependencyMapping mapping = GradleDependencyMappingUtil.buildDependencyMapping(getProject());
 			Client client = JerseyClientFactory.buildClient(ext.getUsername(), ext.getPassword());
 			CodeConnectUpstreamReporter reporter = new CodeConnectNeo4jUpstreamReporter(client, ext.getUrl());
-			reporter.reportUpstream(mapping, System.out);
+			reporter.reportUpstream(mapping, ext.getOutputStream());
 		}
-		catch(CodeConnectException e) {
+		//Prevent exceptions from bubbling out out
+		catch(RuntimeException | CodeConnectException e) {
+			if(ext.isFailOnException()) {
+				throw e;
+			}
 			LOG.error("Problem reprting upstream dependencies", e);
 		}
 	}

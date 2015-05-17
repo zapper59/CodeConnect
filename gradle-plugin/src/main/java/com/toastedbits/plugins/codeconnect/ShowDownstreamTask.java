@@ -26,14 +26,19 @@ public class ShowDownstreamTask extends DefaultTask {
 	}
 
 	@TaskAction
-	public void showDownstream() {
+	public void showDownstream() throws CodeConnectException {
+		CodeConnectGradleExtension ext = getProject().getExtensions().findByType(CodeConnectGradleExtension.class);
+
 		try {
-			CodeConnectGradleExtension ext = getProject().getExtensions().findByType(CodeConnectGradleExtension.class);
 			Client client = JerseyClientFactory.buildClient(ext.getUsername(), ext.getPassword());
 			CodeConnectDownstreamReporter reporter = new CodeConnectNeo4jDownstreamReporter(client, ext.getUrl());
-			reporter.showDownstream(getUpstreamTarget(), System.out);
+			reporter.showDownstream(getUpstreamTarget(), ext.getOutputStream());
 		}
-		catch(CodeConnectException e) {
+		//Prevent exceptions from bubbling out out
+		catch(RuntimeException | CodeConnectException e) {
+			if(ext.isFailOnException()) {
+				throw e;
+			}
 			LOG.error("Problem showing downstream dependencies", e);
 		}
 	}

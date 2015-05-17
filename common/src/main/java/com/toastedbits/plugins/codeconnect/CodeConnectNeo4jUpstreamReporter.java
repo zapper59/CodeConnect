@@ -41,7 +41,7 @@ public class CodeConnectNeo4jUpstreamReporter implements CodeConnectUpstreamRepo
 		this.mapping = mapping;
 
 		try {
-			writer.println("Reporting upstream dependencies for project " + mapping.getProject());
+			writer.println("> Reporting upstream dependencies for project " + mapping.getProject());
 			if(mapping.isEmpty()) {
 				writer.println("This project has no dependencies configured");
 				return;

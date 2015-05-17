@@ -18,7 +18,6 @@ Most useful when managing a large number of projects
 CodeConnect currently provides two main components:
 reportUpstream: report a project's dependencies to a database
 showDownstream: show who uses a particular artifact (defaults to the current project)
-	Optional:
 
 * Run "gradle reportUpstream" in all of your projects, preferably as part of a continous integration solution (e.g. Jenkins)
 * Run "gradle showDownstream" on demand to view downstream projects (note this only works if regularly updating upstream!)
@@ -26,12 +25,21 @@ showDownstream: show who uses a particular artifact (defaults to the current pro
 * Use CodeConnect web interface
 
 ## Configuration
-CodeConnect can be configured with the following system properties (default values provided)
+### System Properties (all optional, default values provided)
 * codeconnect.readtimeout="5000"
 * codeconnect.connecttimeout="5000"
 * codeconnect.upstream="groupId:artifactId:version"
 
 (Note: upstream defaults to the current project maven coordinates)
+
+### Gradle Extension (all optional, defaults values provided)
+codeconnect {
+	url = "http://localhost:7474"
+	username = "neo4j"
+	password = "neo4j"
+	outputStream = System.out
+	failOnException = true
+}
 
 ## Examples
 gradle -Dcodeconnect.connecttimeout=1000 reportUpstream 

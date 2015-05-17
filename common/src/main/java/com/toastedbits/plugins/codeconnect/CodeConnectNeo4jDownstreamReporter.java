@@ -63,7 +63,7 @@ public class CodeConnectNeo4jDownstreamReporter implements CodeConnectDownstream
 			Map<String, Set<MavenCoordinate>> mapping = entity.toMapping();
 	
 			if(isMappingEmpty(mapping)) {
-				writer.println("No downstream projects found");
+				writer.println("< No downstream projects found");
 				return;
 			}
 			for(Map.Entry<String, Set<MavenCoordinate>> entry : mapping.entrySet()) {

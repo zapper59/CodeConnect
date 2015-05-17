@@ -25,14 +25,14 @@ buildscript {
 	}
 }
 
-codeconnect {
-	//url = "http://localhost:7474"
-
-	//username and password are optional
-	//depending on how Neo4j server is configured
-	//username = "neo4j"
-	password = "admin"
-}
+//username and password are optional depending on how Neo4j server is configured
+//codeconnect {
+//	url = "http://localhost:7474"
+//	username = "neo4j"
+//	password = "neo4j"
+//	failOnException = true
+//	outputStream = System.out 
+//}
 
 //Just some example dependencies to mess around with
 dependencies {
