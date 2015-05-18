@@ -41,7 +41,7 @@ public class CodeConnectNeo4jUpstreamReporter implements CodeConnectUpstreamRepo
 		this.mapping = mapping;
 
 		try {
-			writer.println("> Reporting upstream dependencies for project " + mapping.getProject());
+			writer.println("Reporting upstream dependencies for project " + mapping.getProject());
 			if(mapping.isEmpty()) {
 				writer.println("This project has no dependencies configured");
 				return;
@@ -98,7 +98,7 @@ public class CodeConnectNeo4jUpstreamReporter implements CodeConnectUpstreamRepo
 	}
 
 	private void resetNode(MavenCoordinate coordinate, int transactionId) throws CodeConnectException {
-		writer.println("Refreshing project node for: " + 
+		writer.println("> Refreshing project node for: " + 
 				coordinate.getGroupId() + ":" + coordinate.getArtifactId()  + ":" + coordinate.getVersion());
 		Neo4jTransactionPostEntity payload = new Neo4jTransactionPostEntity();
 		List<Neo4jTransactionStatement> statements = new ArrayList<>();
