@@ -1,25 +1,16 @@
-apply plugin: "war"
+apply plugin: "maven"
 
-version = "1.0.2"
+version = "0.1.0-SNAPSHOT"
+group = "com.toastedbits.codeconnect"
 
-war {
-	archiveName = "codeconnect.war"
-	destinationDir = buildDir
-
-	manifest {
-		attributes(
-			"Implementation-Vendor":"Cisco Systems, Inc",
-			"Implementation-Title":rootProject.name,
-			"Implementation-Version":rootProject.version
-		)
+subprojects {
+	//maven plugin allows us to do gradle install and use mavenLocal() for the example script
+	apply plugin: "maven"
+	repositories {
+		mavenCentral()
 	}
 }
 
-tasks.withType(JavaCompile) {
-	options.compilerArgs << "-Xlint:unchecked"
-	options.compilerArgs << "-Werror"
-}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = "2.2"
+task wrapper(type:Wrapper) {
+	gradleVersion="2.4"
 }

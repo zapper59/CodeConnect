@@ -1,0 +1,42 @@
+/*
+ * Execute with gradle -b example.gradle reportUpstream/showDownstream
+ *
+ * Optional:
+ * -Dcodeconnect.upstream=junit:junit:4.12
+ * -Dcodeconnect.connecttimeout=1000
+ * -Dcodeconnect.readtimeout=1000
+ */
+
+apply plugin: "maven"
+apply plugin: "java"
+apply plugin: "codeconnect"
+
+version = "0.1.0-SNAPSHOT"
+group = "com.toastedbits.codeconnect"
+
+buildscript {
+	repositories {
+		mavenCentral();
+		mavenLocal();
+	}
+	dependencies {
+		classpath "com.toastedbits.codeconnect:code-connect-gradle:0.1.0-SNAPSHOT"
+		classpath "com.toastedbits.codeconnect:code-connect-common:0.1.0-SNAPSHOT"
+	}
+}
+
+//username and password are optional depending on how Neo4j server is configured
+//codeconnect {
+//	url = "http://localhost:7474"
+//	username = "neo4j"
+//	password = "neo4j"
+//	failOnException = true
+//	outputStream = System.out 
+//}
+
+//Just some example dependencies to mess around with
+dependencies {
+	compile "org.glassfish.jersey.core:jersey-client:2.17"
+	compile "org.apache.commons:commons-lang3:3.4"
+	testCompile "javax.servlet:javax.servlet-api:3.1.0"
+}
