@@ -12,7 +12,7 @@ apply plugin: "java"
 apply plugin: "codeconnect"
 
 version = "0.1.0-SNAPSHOT"
-group = "com.toastedbits.codeconnect"
+group = "com.toastedbits.plugins.codeconnect"
 
 buildscript {
 	repositories {
@@ -20,8 +20,7 @@ buildscript {
 		mavenLocal();
 	}
 	dependencies {
-		classpath "com.toastedbits.codeconnect:code-connect-gradle:0.1.0-SNAPSHOT"
-		classpath "com.toastedbits.codeconnect:code-connect-common:0.1.0-SNAPSHOT"
+		classpath "com.toastedbits.plugins.codeconnect:codeconnect-gradle:0.1.0-SNAPSHOT"
 	}
 }
 

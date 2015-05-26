@@ -3,7 +3,7 @@ apply plugin: "eclipse"
 apply plugin: "maven"
 
 version = "0.1.0-SNAPSHOT"
-group = "com.toastedbits.codeconnect"
+group = "com.toastedbits.plugins.codeconnect"
 
 dependencies {
 	compile "org.glassfish.jersey.core:jersey-client:2.17"

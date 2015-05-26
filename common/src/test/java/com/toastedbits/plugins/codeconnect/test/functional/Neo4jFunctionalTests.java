@@ -1,4 +1,4 @@
-package com.toastedbits.codeconnect.test.functional;
+package com.toastedbits.plugins.codeconnect.test.functional;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -43,7 +43,7 @@ public class Neo4jFunctionalTests {
 
 	@Test
 	public void testReportUpstream() throws CodeConnectException {
-		MavenCoordinate project = new MavenCoordinate("com.toastedbits.codeconnect", "common-test", "0.0.1");
+		MavenCoordinate project = new MavenCoordinate("com.toastedbits.plugins.codeconnect", "common-test", "0.0.1");
 		DependencyMapping mapping = new DependencyMapping(project);
 		mapping.addMapping(COMPILE, "org.glassfish.jersey.core:jersey-client:2.17");
 		mapping.addMapping(COMPILE, "org.apache.commons:commons-lang3:3.4");

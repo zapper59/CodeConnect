@@ -3,6 +3,7 @@ apply plugin: "war"
 apply plugin: "eclipse"
 apply plugin: "eclipse-wtp"
 
+group = "com.cisco.codeconnect"
 version = "1.0.2"
 
 war {

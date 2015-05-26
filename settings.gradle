@@ -1,5 +1,6 @@
-include "common", "gradle-plugin", "webapp"
-rootProject.name="code-connect"
+include "common", "gradle-plugin", "webapp", "maven-plugin"
+rootProject.name="codeconnect"
 project(":common").name = rootProject.name + "-common"
 project(":gradle-plugin").name = rootProject.name + "-gradle"
 project(":webapp").name = rootProject.name + "-webapp"
+project(":maven-plugin").name = rootProject.name + "-maven-plugin"

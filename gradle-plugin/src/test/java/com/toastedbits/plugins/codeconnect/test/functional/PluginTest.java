@@ -1,4 +1,4 @@
-package com.toastedbits.codeconnect.test.functional;
+package com.toastedbits.plugins.codeconnect.test.functional;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
