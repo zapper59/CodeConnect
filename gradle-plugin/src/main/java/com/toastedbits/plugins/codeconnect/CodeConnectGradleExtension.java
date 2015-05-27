@@ -2,6 +2,8 @@ package com.toastedbits.plugins.codeconnect;
 
 import java.io.OutputStream;
 
+import com.toastedbits.plugins.codeconnect.utils.Neo4jDefaults;
+
 //TODO: CodeConnect configuration is currently coupled to Neo4j.
 /* 
  * Should be more like the following
@@ -24,7 +26,7 @@ public class CodeConnectGradleExtension {
 	public static final boolean DEFAULT_FAIL_ON_EXCEPTION = true;
 	public static final OutputStream DEFAULT_OUTPUT_STREAM = System.out;
 
-	private String url = Neo4jDefaults.URL;
+	private String url = Neo4jDefaults.URL_DEFAULT;
 
 	//Only use auth if at least one is declared, therefore do not assign default value here
 	private String username;

@@ -45,7 +45,14 @@ codeconnect {
 gradle -Dcodeconnect.connecttimeout=1000 reportUpstream 
 gradle -Dcodeconnect.upstream="log4j:log4j:4.12" showDownstream
 
+mvn -f example-pom.xml reportUpstream
+mvn -f example-pom.xml -Dcodeconnect.upstream="junit:junit:4.12" showDownstream
+
+Maven reportUpstream can be performed without having to apply the plugin to your pom.xml:
+	mvn -Dcodeconnect.url="http://someserver:7474" -Dcodeconnect.username="neo4j" -Dcodeconnect.password="neo4j" com.toastedbits.plugins.codeconnect:codeconnect-maven-plugin:0.1.0-SNAPSHOT:reportUpstream
+
 ## TODO
+* Drive the maven-plugin build with Gradle
 * Write better tests
 * Use a container (docker) to spin up neo4j for tests
 * Use proper snapshot/release jar handling
