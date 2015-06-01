@@ -12,12 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.toastedbits.plugins.codeconnect.CodeConnectDownstreamReporter;
-import com.toastedbits.plugins.codeconnect.CodeConnectNeo4jDownstreamReporter;
-import com.toastedbits.plugins.codeconnect.CodeConnectNeo4jUpstreamReporter;
 import com.toastedbits.plugins.codeconnect.CodeConnectUpstreamReporter;
 import com.toastedbits.plugins.codeconnect.DependencyMapping;
 import com.toastedbits.plugins.codeconnect.MavenCoordinate;
 import com.toastedbits.plugins.codeconnect.exceptions.CodeConnectException;
+import com.toastedbits.plugins.codeconnect.neo4j.CodeConnectNeo4jDownstreamReporter;
+import com.toastedbits.plugins.codeconnect.neo4j.CodeConnectNeo4jUpstreamReporter;
 
 @Ignore("Depends on local neo4j server configured")
 public class Neo4jFunctionalTests {

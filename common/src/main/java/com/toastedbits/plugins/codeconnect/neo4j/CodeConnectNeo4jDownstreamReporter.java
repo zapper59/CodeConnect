@@ -1,4 +1,4 @@
-package com.toastedbits.plugins.codeconnect;
+package com.toastedbits.plugins.codeconnect.neo4j;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -13,6 +13,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.toastedbits.plugins.codeconnect.CodeConnectDownstreamReporter;
+import com.toastedbits.plugins.codeconnect.MavenCoordinate;
 import com.toastedbits.plugins.codeconnect.entities.Neo4jCypherPostEntity;
 import com.toastedbits.plugins.codeconnect.entities.Neo4jDownstreamResponseEntity;
 import com.toastedbits.plugins.codeconnect.exceptions.CodeConnectException;
