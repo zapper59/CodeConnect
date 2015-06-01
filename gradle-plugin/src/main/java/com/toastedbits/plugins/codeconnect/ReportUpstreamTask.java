@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.toastedbits.plugins.codeconnect.exceptions.CodeConnectException;
+import com.toastedbits.plugins.codeconnect.neo4j.CodeConnectNeo4jUpstreamReporter;
 import com.toastedbits.plugins.codeconnect.utils.JerseyClientFactory;
 
 public class ReportUpstreamTask extends DefaultTask {

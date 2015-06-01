@@ -244,11 +244,11 @@
 		}
 		var populateProjectVersionSelection = function() {
 			console.log("populating version selector");
-			getProjectVersions($("#projects_name_selector").val(), $(
-					"#projects_group_selector").val(), function(data, name,
-					group) {
+			getProjectVersions($("#projects_name_selector").val(), $("#projects_group_selector").val(), function(response, name, group) {
 				var selector = $("#projects_version_selector");
-				data = data.data.sort(function(a,b){return -compareVersionStrings(a,b);});
+				var data = response.data.sort(function(a, b) {
+					return -compareVersionStrings(a.toString(), b.toString());
+				});
 				selector.empty();
 				selector.attr("style", null);
 				for (var i = 0; i < data.length; i++) {

@@ -1,6 +1,5 @@
 package com.toastedbits.plugins.codeconnect.entities;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Set;
 
 import com.toastedbits.plugins.codeconnect.MavenCoordinate;
 import com.toastedbits.plugins.codeconnect.exceptions.CodeConnectException;
-import com.toastedbits.plugins.codeconnect.exceptions.Neo4jRestException;
 
 public class Neo4jDownstreamResponseEntity {
 	private static final int GROUP_COL = 0;

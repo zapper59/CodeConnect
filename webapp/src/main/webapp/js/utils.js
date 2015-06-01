@@ -41,23 +41,38 @@ function generateRandomColor() {
 	return color;
 }
 
-function compareVersionStrings(one, two){
-	if (one == two) return 0;
+function compareVersionStrings(one, two) {
+	if($.type(one) !== "string") {
+		throw new Error("IllegalArgument one: " + one);
+	}
+	if($.type(two) !== "string") {
+		throw new Error("IllegalArgument two: " + two);
+	}
+
+	if (one === two)
+		return 0;
+
 	var onearr = one.replace(/[^.\-0-9]/g,"").split(/[-.]/);
 	var twoarr = two.replace(/[^.\-0-9]/g,"").split(/[-.]/);
 
-	if (onearr.length == 0)return -1;
-	if (twoarr.length == 0)return 1;
+	if (onearr.length == 0)
+		return -1;
+	if (twoarr.length == 0)
+		return 1;
+
 	var ans = 0;
-	for(var i=0; i<onearr.length && i<twoarr.length; i++){
+	for(var i=0; i<onearr.length && i<twoarr.length; i++) {
 		if(Number(onearr[i]) < Number(twoarr[i]))
 			return ans = -1;
 		if(Number(onearr[i]) > Number(twoarr[i]))
 			return ans = 1;
 	};
-	if(ans == 0){
-		if(onearr.length > twoarr.length)return 1;
-		if(onearr.length < twoarr.length)return -1;
+	if(ans == 0) {
+		if(onearr.length > twoarr.length)
+			return 1;
+		if(onearr.length < twoarr.length)
+			return -1;
 	}
+
 	return ans;
 };

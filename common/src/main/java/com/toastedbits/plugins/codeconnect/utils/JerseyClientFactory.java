@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
-import com.toastedbits.plugins.codeconnect.Neo4jDefaults;
 
 public class JerseyClientFactory {
 	public static Client buildClient(final String username, final String password) {
@@ -17,11 +16,11 @@ public class JerseyClientFactory {
 		if(StringUtils.isNotEmpty(username) || StringUtils.isNotEmpty(password)) {
 			String uname = username;
 			if(StringUtils.isEmpty(uname)) {
-				uname = Neo4jDefaults.USER;
+				uname = Neo4jDefaults.USERNAME_DEFAULT;
 			}
 			String pword = password;
 			if(StringUtils.isEmpty(pword)) {
-				pword = Neo4jDefaults.PASSWORD;
+				pword = Neo4jDefaults.PASSWORD_DEFAULT;
 			}
 			HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(uname, pword);
 			client.register(feature);
